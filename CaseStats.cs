@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.FileIO;
+using System.Drawing;
 
 namespace JiraTicketStats
 {
@@ -34,12 +35,11 @@ namespace JiraTicketStats
                 saved.ScrollBars = ScrollBars.Vertical;
             }
 
-            var compare = FindTextBox("txtCompareResults");
+            var compare = FindRichTextBox("txtCompareResults");
             if (compare != null)
             {
                 compare.ReadOnly = true;
-                compare.Multiline = true;
-                compare.ScrollBars = ScrollBars.Vertical;
+                compare.ScrollBars = RichTextBoxScrollBars.Vertical;
             }
 
             chkExcludeIncidents.Checked = true;
@@ -624,7 +624,7 @@ namespace JiraTicketStats
             if (saved != null)
                 saved.Clear();
 
-            var compare = FindTextBox("txtCompareResults");
+            var compare = FindRichTextBox("txtCompareResults");
             if (compare != null)
                 compare.Clear();
 
@@ -661,10 +661,10 @@ namespace JiraTicketStats
             string current = txtResults.Text ?? string.Empty;
             var savedBox = FindTextBox("txtSavedResults");
             string saved = savedBox != null ? savedBox.Text : string.Empty;
-            var compareBox = FindTextBox("txtCompareResults");
-            string compare = compareBox != null ? compareBox.Text : string.Empty;
+            var compare = FindRichTextBox("txtCompareResults");
+            string compareRtf = compare != null ? compare.Rtf : string.Empty;
 
-            if (string.IsNullOrWhiteSpace(current) && string.IsNullOrWhiteSpace(saved) && string.IsNullOrWhiteSpace(compare))
+            if (string.IsNullOrWhiteSpace(current) && string.IsNullOrWhiteSpace(saved) && string.IsNullOrWhiteSpace(compareRtf))
             {
                 MessageBox.Show("There are no results to save. Calculate or load stats first.");
                 return;
@@ -699,8 +699,8 @@ namespace JiraTicketStats
             string current = txtResults.Text ?? string.Empty;
             var savedBox = FindTextBox("txtSavedResults");
             string saved = savedBox != null ? savedBox.Text : string.Empty;
-            var compareBox = FindTextBox("txtCompareResults");
-            string compare = compareBox != null ? compareBox.Text : string.Empty;
+            var compare = FindRichTextBox("txtCompareResults");
+            string compareRtf = compare != null ? compare.Rtf : string.Empty;
 
             string mainFilePath = txtFilePath.Text ?? string.Empty;
             string secondPath = txtSavedResults2.Text ?? string.Empty;
@@ -724,7 +724,7 @@ namespace JiraTicketStats
 
                 sb.AppendLine("CurrentResults," + EscapeCsv(current));
                 sb.AppendLine("SavedResults," + EscapeCsv(saved));
-                sb.AppendLine("ComparisonResults," + EscapeCsv(compare));
+                sb.AppendLine("ComparisonResults," + EscapeCsv(compareRtf));
 
                 File.WriteAllText(filePath, sb.ToString(), System.Text.Encoding.UTF8);
             }
@@ -752,7 +752,7 @@ namespace JiraTicketStats
                 sb.AppendLine(saved);
                 sb.AppendLine();
                 sb.AppendLine("=== Comparison ===");
-                sb.AppendLine(compare);
+                sb.AppendLine(compareRtf);
 
                 File.WriteAllText(filePath, sb.ToString(), System.Text.Encoding.UTF8);
             }
@@ -858,16 +858,15 @@ namespace JiraTicketStats
                 return;
             }
 
-            string compare = BuildComparisonText(curSummary, savedSummary);
-
-            var compareBox = FindTextBox("txtCompareResults");
-            if (compareBox != null)
+            var compare = FindRichTextBox("txtCompareResults");
+            if (compare != null)
             {
-                compareBox.Text = compare;
+                ShowCompactComparison(compare, curSummary, savedSummary);
             }
             else
             {
-                ShowLongTextInDialog("Stats Comparison", compare);
+                // fallback to a plain text dialog
+                ShowLongTextInDialog("Stats Comparison", BuildCompactComparisonString(curSummary, savedSummary));
             }
         }
 
@@ -880,6 +879,19 @@ namespace JiraTicketStats
                 var tb = c as TextBox;
                 if (tb != null)
                     return tb;
+            }
+            return null;
+        }
+
+        // Helper: locate RichTextBox by name safely
+        private RichTextBox FindRichTextBox(string name)
+        {
+            var found = this.Controls.Find(name, true);
+            foreach (var c in found)
+            {
+                var rtb = c as RichTextBox;
+                if (rtb != null)
+                    return rtb;
             }
             return null;
         }
@@ -1002,37 +1014,84 @@ namespace JiraTicketStats
             return value;
         }
 
-        private string BuildComparisonText(StatsSummary current, StatsSummary saved)
+        // Build a compact plain-text comparison (fallback)
+        private string BuildCompactComparisonString(StatsSummary current, StatsSummary saved)
         {
             var sb = new System.Text.StringBuilder();
-
-            sb.AppendLine("Comparison: Current vs Saved");
-            sb.AppendLine("---------------------------");
-            sb.AppendFormat("Total Tickets: {0} vs {1}    Diff: {2}", current.TotalTickets, saved.TotalTickets, current.TotalTickets - saved.TotalTickets);
+            sb.AppendLine("Differences (Current - Saved)");
+            sb.AppendLine("----------------------------");
+            sb.AppendFormat("Total Tickets: {0}", current.TotalTickets - saved.TotalTickets); sb.AppendLine();
+            sb.AppendFormat("Average Close Time (h): {0:F2}", current.AvgHours - saved.AvgHours); sb.AppendLine();
+            sb.AppendFormat("Median Close Time (h): {0:F2}", current.MedianHours - saved.MedianHours); sb.AppendLine();
+            sb.AppendFormat("Fastest Close Time (h): {0:F2}", current.MinHours - saved.MinHours); sb.AppendLine();
+            sb.AppendFormat("Slowest Close Time (h): {0:F2}", current.MaxHours - saved.MaxHours); sb.AppendLine();
+            sb.AppendFormat("Total Reopened: {0}", current.TotalReopened - saved.TotalReopened); sb.AppendLine();
             sb.AppendLine();
-            sb.AppendFormat("Average Close Time: {0:F2} h vs {1:F2} h    Diff: {2:F2} h", current.AvgHours, saved.AvgHours, current.AvgHours - saved.AvgHours);
-            sb.AppendLine();
-            sb.AppendFormat("Median Close Time: {0:F2} h vs {1:F2} h    Diff: {2:F2} h", current.MedianHours, saved.MedianHours, current.MedianHours - saved.MedianHours);
-            sb.AppendLine();
-            sb.AppendFormat("Fastest Close Time: {0:F2} h vs {1:F2} h    Diff: {2:F2} h", current.MinHours, saved.MinHours, current.MinHours - saved.MinHours);
-            sb.AppendLine();
-            sb.AppendFormat("Slowest Close Time: {0:F2} h vs {1:F2} h    Diff: {2:F2} h", current.MaxHours, saved.MaxHours, current.MaxHours - saved.MaxHours);
-            sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendFormat("Total Reopened: {0} vs {1}    Diff: {2}", current.TotalReopened, saved.TotalReopened, current.TotalReopened - saved.TotalReopened);
-            sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendLine("Rows Skipped (current vs saved):");
-            sb.AppendFormat("Bad/Missing Dates: {0} vs {1}    Diff: {2}", current.SkippedBadDates, saved.SkippedBadDates, current.SkippedBadDates - saved.SkippedBadDates);
-            sb.AppendLine();
-            sb.AppendFormat("Reopened Excluded: {0} vs {1}    Diff: {2}", current.SkippedReopened, saved.SkippedReopened, current.SkippedReopened - saved.SkippedReopened);
-            sb.AppendLine();
-            sb.AppendFormat("Incidents Excluded: {0} vs {1}    Diff: {2}", current.SkippedIncidents, saved.SkippedIncidents, current.SkippedIncidents - saved.SkippedIncidents);
-            sb.AppendLine();
-            sb.AppendFormat("Duplicate / No Action Excluded: {0} vs {1}    Diff: {2}", current.SkippedDuplicateNoAction, saved.SkippedDuplicateNoAction, current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction);
-            sb.AppendLine();
+            sb.AppendLine("Rows Skipped Differences:");
+            sb.AppendFormat("Bad/Missing Dates: {0}", current.SkippedBadDates - saved.SkippedBadDates); sb.AppendLine();
+            sb.AppendFormat("Reopened Excluded: {0}", current.SkippedReopened - saved.SkippedReopened); sb.AppendLine();
+            sb.AppendFormat("Incidents Excluded: {0}", current.SkippedIncidents - saved.SkippedIncidents); sb.AppendLine();
+            sb.AppendFormat("Duplicate / No Action Excluded: {0}", current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction); sb.AppendLine();
 
             return sb.ToString();
+        }
+
+        // Render the compact differences into the RichTextBox with color:
+        // positive diffs -> green, negative diffs -> red, zero -> default color (black)
+        private void ShowCompactComparison(RichTextBox rtb, StatsSummary current, StatsSummary saved)
+        {
+            if (rtb == null) return;
+
+            rtb.SuspendLayout();
+            rtb.Clear();
+
+            AppendLabelAndColoredValue(rtb, "Total Tickets: ", (current.TotalTickets - saved.TotalTickets));
+            AppendLabelAndColoredValue(rtb, "Average Close Time (h): ", (current.AvgHours - saved.AvgHours));
+            AppendLabelAndColoredValue(rtb, "Median Close Time (h): ", (current.MedianHours - saved.MedianHours));
+            AppendLabelAndColoredValue(rtb, "Fastest Close Time (h): ", (current.MinHours - saved.MinHours));
+            AppendLabelAndColoredValue(rtb, "Slowest Close Time (h): ", (current.MaxHours - saved.MaxHours));
+            AppendLabelAndColoredValue(rtb, "Total Reopened: ", (current.TotalReopened - saved.TotalReopened));
+
+            rtb.AppendText(Environment.NewLine);
+            rtb.AppendText("Rows Skipped Differences:" + Environment.NewLine);
+
+            AppendLabelAndColoredValue(rtb, "  Bad/Missing Dates: ", (current.SkippedBadDates - saved.SkippedBadDates));
+            AppendLabelAndColoredValue(rtb, "  Reopened Excluded: ", (current.SkippedReopened - saved.SkippedReopened));
+            AppendLabelAndColoredValue(rtb, "  Incidents Excluded: ", (current.SkippedIncidents - saved.SkippedIncidents));
+            AppendLabelAndColoredValue(rtb, "  Duplicate / No Action Excluded: ", (current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction));
+
+            rtb.ResumeLayout();
+        }
+
+        // Helper to append label and a colored numeric value. Works for int and double via overloads.
+        private void AppendLabelAndColoredValue(RichTextBox rtb, string label, int diff)
+        {
+            rtb.SelectionColor = Color.Black;
+            rtb.AppendText(label);
+            var start = rtb.TextLength;
+            rtb.AppendText((diff >= 0 ? "+" : "") + diff.ToString(CultureInfo.CurrentCulture));
+            var len = rtb.TextLength - start;
+
+            rtb.Select(start, len);
+            rtb.SelectionColor = diff > 0 ? Color.Green : (diff < 0 ? Color.Red : Color.Black);
+            rtb.Select(rtb.TextLength, 0);
+            rtb.AppendText(Environment.NewLine);
+            rtb.SelectionColor = Color.Black;
+        }
+
+        private void AppendLabelAndColoredValue(RichTextBox rtb, string label, double diff)
+        {
+            rtb.SelectionColor = Color.Black;
+            rtb.AppendText(label);
+            var start = rtb.TextLength;
+            rtb.AppendText((diff >= 0 ? "+" : "") + diff.ToString("F2", CultureInfo.CurrentCulture));
+            var len = rtb.TextLength - start;
+
+            rtb.Select(start, len);
+            rtb.SelectionColor = diff > 0 ? Color.Green : (diff < 0 ? Color.Red : Color.Black);
+            rtb.Select(rtb.TextLength, 0);
+            rtb.AppendText(Environment.NewLine);
+            rtb.SelectionColor = Color.Black;
         }
 
         // Add this method to the CaseStats class
@@ -1070,23 +1129,19 @@ namespace JiraTicketStats
             return false;
         }
 
-        // New helper: if a comparison box exists and already contains a comparison,
-        // update it by reparsing current & saved stats and rebuilding the comparison.
+        // New helper: if a comparison box exists, update it by reparsing current & saved stats and rebuilding the comparison.
+        // Modified: always attempt to rebuild comparison when both current and saved stats are present.
         private void UpdateComparisonIfPresent()
         {
-            var compareBox = FindTextBox("txtCompareResults");
-            if (compareBox == null)
+            var compare = FindRichTextBox("txtCompareResults");
+            if (compare == null)
                 return;
 
-            // only update if there is something currently being shown in the compare box
-            if (string.IsNullOrWhiteSpace(compareBox.Text))
-                return;
-
+            // If either current or saved is missing, nothing to compare
             string current = txtResults.Text;
             var savedBox = FindTextBox("txtSavedResults");
             string saved = savedBox != null ? savedBox.Text : string.Empty;
 
-            // need both current and saved in order to rebuild comparison
             if (string.IsNullOrWhiteSpace(current) || string.IsNullOrWhiteSpace(saved))
                 return;
 
@@ -1096,8 +1151,8 @@ namespace JiraTicketStats
             if (curSummary == null || savedSummary == null)
                 return;
 
-            string compare = BuildComparisonText(curSummary, savedSummary);
-            compareBox.Text = compare;
+            // Always render the comparison into the compare box when both summaries are available.
+            ShowCompactComparison(compare, curSummary, savedSummary);
         }
 
         // Simple container for parsed stats
@@ -1113,6 +1168,11 @@ namespace JiraTicketStats
             public int SkippedReopened { get; set; }
             public int SkippedIncidents { get; set; }
             public int SkippedDuplicateNoAction { get; set; }
+        }
+
+        private void txtCompareResults_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
