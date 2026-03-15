@@ -8,7 +8,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelRoot;
-        private System.Windows.Forms.TableLayoutPanel leftPanel;
+        private System.Windows.Forms.FlowLayoutPanel leftPanel;
         private System.Windows.Forms.TableLayoutPanel rightPanel;
 
         private System.Windows.Forms.Label lblFile;
@@ -34,15 +34,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-
             this.label4 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-
             this.tableLayoutPanelRoot = new System.Windows.Forms.TableLayoutPanel();
-            this.leftPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.rightPanel = new System.Windows.Forms.TableLayoutPanel();
-
+            this.leftPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.lblFile = new System.Windows.Forms.Label();
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
@@ -55,190 +50,301 @@
             this.btnCalculate = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnSaveStats = new System.Windows.Forms.Button();
-
+            this.rightPanel = new System.Windows.Forms.TableLayoutPanel();
             this.txtResults = new System.Windows.Forms.TextBox();
             this.txtSavedResults = new System.Windows.Forms.TextBox();
             this.txtCompareResults = new System.Windows.Forms.RichTextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-
+            this.tableLayoutPanelRoot.SuspendLayout();
+            this.leftPanel.SuspendLayout();
+            this.rightPanel.SuspendLayout();
             this.SuspendLayout();
-
-            // title (top)
-            this.label4.Text = "Case History Statistic Comparison Tool (Beta)";
+            // 
+            // label4
+            // 
             this.label4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label4.Height = 24;
+            this.label4.Location = new System.Drawing.Point(0, 18);
+            this.label4.Margin = new System.Windows.Forms.Padding(3);
             this.label4.Name = "label4";
-
-            // progress bar (below title)
+            this.label4.Padding = new System.Windows.Forms.Padding(3);
+            this.label4.Size = new System.Drawing.Size(1560, 52);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "Case History Statistic Comparison Tool (Beta)";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label4.Click += new System.EventHandler(this.label4_Click);
+            // 
+            // progressBar1
+            // 
             this.progressBar1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.progressBar1.Height = 18;
+            this.progressBar1.Location = new System.Drawing.Point(0, 0);
             this.progressBar1.Name = "progressBar1";
-
-            // tableLayoutPanelRoot: 2 columns (left fixed, right fills)
+            this.progressBar1.Size = new System.Drawing.Size(1560, 18);
+            this.progressBar1.TabIndex = 1;
+            // 
+            // tableLayoutPanelRoot
+            // 
             this.tableLayoutPanelRoot.ColumnCount = 2;
-            this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 260F));
+            this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 320F));
             this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelRoot.Controls.Add(this.leftPanel, 0, 0);
+            this.tableLayoutPanelRoot.Controls.Add(this.rightPanel, 1, 0);
+            this.tableLayoutPanelRoot.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanelRoot.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanelRoot.Name = "tableLayoutPanelRoot";
             this.tableLayoutPanelRoot.RowCount = 1;
             this.tableLayoutPanelRoot.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelRoot.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanelRoot.Padding = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanelRoot.Name = "tableLayoutPanelRoot";
-
-            // leftPanel: vertical stack of controls
-            this.leftPanel.ColumnCount = 1;
-            this.leftPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.leftPanel.RowCount = 12;
+            this.tableLayoutPanelRoot.Size = new System.Drawing.Size(1560, 1081);
+            this.tableLayoutPanelRoot.TabIndex = 0;
+            // 
+            // leftPanel
+            // 
+            this.leftPanel.AutoScroll = true;
+            this.leftPanel.BackColor = System.Drawing.Color.Transparent;
+            this.leftPanel.Controls.Add(this.lblFile);
+            this.leftPanel.Controls.Add(this.txtFilePath);
+            this.leftPanel.Controls.Add(this.btnBrowse);
+            this.leftPanel.Controls.Add(this.label1);
+            this.leftPanel.Controls.Add(this.txtSavedResults2);
+            this.leftPanel.Controls.Add(this.btnLoadStats);
+            this.leftPanel.Controls.Add(this.chkExcludeIncidents);
+            this.leftPanel.Controls.Add(this.chkExcludeNoActionDuplicate);
+            this.leftPanel.Controls.Add(this.chkExcludeReopened);
+            this.leftPanel.Controls.Add(this.btnCalculate);
+            this.leftPanel.Controls.Add(this.btnClear);
+            this.leftPanel.Controls.Add(this.btnSaveStats);
             this.leftPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.leftPanel.Padding = new System.Windows.Forms.Padding(8);
-            // rows (absolute for predictable spacing)
-            this.leftPanel.RowStyles.Clear();
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F)); // lblFile
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F)); // txtFilePath
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F)); // btnBrowse
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F)); // label1
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F)); // txtSavedResults2
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F)); // btnLoadStats
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F)); // chkIncidents
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F)); // chkNoAction
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F)); // chkReopened
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44F)); // btnCalculate
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F)); // btnClear
-            this.leftPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F)); // btnSaveStats
-
-            // left controls - labels / inputs
+            this.leftPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.leftPanel.Location = new System.Drawing.Point(0, 30);
+            this.leftPanel.Margin = new System.Windows.Forms.Padding(0, 30, 0, 30);
+            this.leftPanel.Name = "leftPanel";
+            this.leftPanel.Size = new System.Drawing.Size(320, 1021);
+            this.leftPanel.TabIndex = 0;
+            this.leftPanel.WrapContents = false;
+            // 
+            // lblFile
+            // 
             this.lblFile.AutoSize = true;
             this.lblFile.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblFile.Text = "Jira Export CSV File";
+            this.lblFile.Location = new System.Drawing.Point(3, 6);
+            this.lblFile.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.lblFile.Name = "lblFile";
-            this.leftPanel.Controls.Add(this.lblFile, 0, 0);
-
-            this.txtFilePath.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.lblFile.Size = new System.Drawing.Size(205, 25);
+            this.lblFile.TabIndex = 0;
+            this.lblFile.Text = "Jira Export CSV File";
+            // 
+            // txtFilePath
+            // 
+            this.txtFilePath.Location = new System.Drawing.Point(3, 40);
+            this.txtFilePath.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
+            this.txtFilePath.MinimumSize = new System.Drawing.Size(260, 28);
             this.txtFilePath.Name = "txtFilePath";
-            this.leftPanel.Controls.Add(this.txtFilePath, 0, 1);
-
-            this.btnBrowse.Text = "Browse...";
+            this.txtFilePath.Size = new System.Drawing.Size(284, 31);
+            this.txtFilePath.TabIndex = 1;
+            // 
+            // btnBrowse
+            // 
+            this.btnBrowse.AutoSize = true;
+            this.btnBrowse.Location = new System.Drawing.Point(3, 82);
+            this.btnBrowse.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
+            this.btnBrowse.MinimumSize = new System.Drawing.Size(90, 30);
             this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btnBrowse.Size = new System.Drawing.Size(111, 35);
+            this.btnBrowse.TabIndex = 2;
+            this.btnBrowse.Text = "Browse...";
+            this.btnBrowse.UseVisualStyleBackColor = true;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
-            this.leftPanel.Controls.Add(this.btnBrowse, 0, 2);
-
+            // 
+            // label1
+            // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label1.Text = "Comparison File";
+            this.label1.Location = new System.Drawing.Point(3, 137);
+            this.label1.Margin = new System.Windows.Forms.Padding(3, 12, 3, 6);
             this.label1.Name = "label1";
-            this.leftPanel.Controls.Add(this.label1, 0, 3);
-
-            this.txtSavedResults2.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.label1.Size = new System.Drawing.Size(168, 25);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Comparison File";
+            // 
+            // txtSavedResults2
+            // 
+            this.txtSavedResults2.Location = new System.Drawing.Point(3, 171);
+            this.txtSavedResults2.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
+            this.txtSavedResults2.MinimumSize = new System.Drawing.Size(260, 28);
             this.txtSavedResults2.Name = "txtSavedResults2";
-            this.leftPanel.Controls.Add(this.txtSavedResults2, 0, 4);
-
-            this.btnLoadStats.Text = "Browse...";
+            this.txtSavedResults2.Size = new System.Drawing.Size(284, 31);
+            this.txtSavedResults2.TabIndex = 4;
+            // 
+            // btnLoadStats
+            // 
+            this.btnLoadStats.AutoSize = true;
+            this.btnLoadStats.Location = new System.Drawing.Point(3, 213);
+            this.btnLoadStats.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
+            this.btnLoadStats.MinimumSize = new System.Drawing.Size(90, 30);
             this.btnLoadStats.Name = "btnLoadStats";
-            this.btnLoadStats.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btnLoadStats.Size = new System.Drawing.Size(111, 35);
+            this.btnLoadStats.TabIndex = 5;
+            this.btnLoadStats.Text = "Browse...";
+            this.btnLoadStats.UseVisualStyleBackColor = true;
             this.btnLoadStats.Click += new System.EventHandler(this.btnLoadStats_Click);
-            this.leftPanel.Controls.Add(this.btnLoadStats, 0, 5);
-
-            this.chkExcludeIncidents.Text = "Exclude Incidents";
+            // 
+            // chkExcludeIncidents
+            // 
             this.chkExcludeIncidents.AutoSize = true;
+            this.chkExcludeIncidents.Location = new System.Drawing.Point(3, 262);
+            this.chkExcludeIncidents.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.chkExcludeIncidents.Name = "chkExcludeIncidents";
-            this.leftPanel.Controls.Add(this.chkExcludeIncidents, 0, 6);
-
-            this.chkExcludeNoActionDuplicate.Text = "Exclude No Action Needed";
+            this.chkExcludeIncidents.Size = new System.Drawing.Size(213, 29);
+            this.chkExcludeIncidents.TabIndex = 6;
+            this.chkExcludeIncidents.Text = "Exclude Incidents";
+            this.chkExcludeIncidents.UseVisualStyleBackColor = true;
+            // 
+            // chkExcludeNoActionDuplicate
+            // 
             this.chkExcludeNoActionDuplicate.AutoSize = true;
+            this.chkExcludeNoActionDuplicate.Location = new System.Drawing.Point(3, 303);
+            this.chkExcludeNoActionDuplicate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.chkExcludeNoActionDuplicate.Name = "chkExcludeNoActionDuplicate";
-            this.leftPanel.Controls.Add(this.chkExcludeNoActionDuplicate, 0, 7);
-
-            this.chkExcludeReopened.Text = "Exclude Re-Opened";
+            this.chkExcludeNoActionDuplicate.Size = new System.Drawing.Size(301, 29);
+            this.chkExcludeNoActionDuplicate.TabIndex = 7;
+            this.chkExcludeNoActionDuplicate.Text = "Exclude No Action Needed";
+            this.chkExcludeNoActionDuplicate.UseVisualStyleBackColor = true;
+            // 
+            // chkExcludeReopened
+            // 
             this.chkExcludeReopened.AutoSize = true;
+            this.chkExcludeReopened.Location = new System.Drawing.Point(3, 344);
+            this.chkExcludeReopened.Margin = new System.Windows.Forms.Padding(3, 6, 3, 12);
             this.chkExcludeReopened.Name = "chkExcludeReopened";
-            this.leftPanel.Controls.Add(this.chkExcludeReopened, 0, 8);
-
-            this.btnCalculate.Text = "Recalculate Stats";
+            this.chkExcludeReopened.Size = new System.Drawing.Size(237, 29);
+            this.chkExcludeReopened.TabIndex = 8;
+            this.chkExcludeReopened.Text = "Exclude Re-Opened";
+            this.chkExcludeReopened.UseVisualStyleBackColor = true;
+            // 
+            // btnCalculate
+            // 
+            this.btnCalculate.AutoSize = true;
+            this.btnCalculate.Location = new System.Drawing.Point(3, 391);
+            this.btnCalculate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnCalculate.MinimumSize = new System.Drawing.Size(120, 34);
             this.btnCalculate.Name = "btnCalculate";
-            this.btnCalculate.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btnCalculate.Size = new System.Drawing.Size(190, 36);
+            this.btnCalculate.TabIndex = 9;
+            this.btnCalculate.Text = "Recalculate Stats";
+            this.btnCalculate.UseVisualStyleBackColor = true;
             this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click);
-            this.leftPanel.Controls.Add(this.btnCalculate, 0, 9);
-
-            this.btnClear.Text = "Clear";
+            // 
+            // btnClear
+            // 
+            this.btnClear.AutoSize = true;
+            this.btnClear.Location = new System.Drawing.Point(3, 439);
+            this.btnClear.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnClear.MinimumSize = new System.Drawing.Size(90, 30);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btnClear.Size = new System.Drawing.Size(100, 35);
+            this.btnClear.TabIndex = 10;
+            this.btnClear.Text = "Clear";
+            this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            this.leftPanel.Controls.Add(this.btnClear, 0, 10);
-
-            this.btnSaveStats.Text = "Export Stats";
+            // 
+            // btnSaveStats
+            // 
+            this.btnSaveStats.AutoSize = true;
+            this.btnSaveStats.Location = new System.Drawing.Point(3, 496);
+            this.btnSaveStats.Margin = new System.Windows.Forms.Padding(3, 16, 3, 6);
+            this.btnSaveStats.MinimumSize = new System.Drawing.Size(110, 34);
             this.btnSaveStats.Name = "btnSaveStats";
-            this.btnSaveStats.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btnSaveStats.Size = new System.Drawing.Size(139, 35);
+            this.btnSaveStats.TabIndex = 11;
+            this.btnSaveStats.Text = "Export Stats";
+            this.btnSaveStats.UseVisualStyleBackColor = true;
             this.btnSaveStats.Click += new System.EventHandler(this.btnSaveStats_Click);
-            this.leftPanel.Controls.Add(this.btnSaveStats, 0, 11);
-
-            // rightPanel: two rows. Row0: 2 equal columns for stat boxes. Row1: compare box spanning both columns.
+            // 
+            // rightPanel
+            // 
             this.rightPanel.ColumnCount = 2;
             this.rightPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.rightPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.rightPanel.Controls.Add(this.txtResults, 0, 0);
+            this.rightPanel.Controls.Add(this.txtSavedResults, 1, 0);
+            this.rightPanel.Controls.Add(this.txtCompareResults, 0, 1);
+            this.rightPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rightPanel.Location = new System.Drawing.Point(320, 30);
+            this.rightPanel.Margin = new System.Windows.Forms.Padding(0, 30, 0, 30);
+            this.rightPanel.Name = "rightPanel";
+            this.rightPanel.Padding = new System.Windows.Forms.Padding(12);
             this.rightPanel.RowCount = 2;
             this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.rightPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rightPanel.Padding = new System.Windows.Forms.Padding(8);
-            this.rightPanel.Name = "rightPanel";
-
-            // txtResults (left stat box)
+            this.rightPanel.Size = new System.Drawing.Size(1240, 1021);
+            this.rightPanel.TabIndex = 1;
+            // 
+            // txtResults
+            // 
+            this.txtResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtResults.Location = new System.Drawing.Point(15, 15);
             this.txtResults.Multiline = true;
+            this.txtResults.Name = "txtResults";
             this.txtResults.ReadOnly = true;
             this.txtResults.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtResults.Name = "txtResults";
-
-            // txtSavedResults (right stat box)
+            this.txtResults.Size = new System.Drawing.Size(602, 691);
+            this.txtResults.TabIndex = 0;
+            // 
+            // txtSavedResults
+            // 
+            this.txtSavedResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtSavedResults.Location = new System.Drawing.Point(623, 15);
             this.txtSavedResults.Multiline = true;
+            this.txtSavedResults.Name = "txtSavedResults";
             this.txtSavedResults.ReadOnly = true;
             this.txtSavedResults.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtSavedResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtSavedResults.Name = "txtSavedResults";
-
-            // txtCompareResults (bottom)
+            this.txtSavedResults.Size = new System.Drawing.Size(602, 691);
+            this.txtSavedResults.TabIndex = 1;
+            // 
+            // txtCompareResults
+            // 
+            this.rightPanel.SetColumnSpan(this.txtCompareResults, 2);
+            this.txtCompareResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCompareResults.Location = new System.Drawing.Point(15, 712);
+            this.txtCompareResults.Name = "txtCompareResults";
             this.txtCompareResults.ReadOnly = true;
             this.txtCompareResults.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtCompareResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtCompareResults.Name = "txtCompareResults";
-
-            // add stat boxes to rightPanel
-            this.rightPanel.Controls.Add(this.txtResults, 0, 0);
-            this.rightPanel.Controls.Add(this.txtSavedResults, 1, 0);
-            // add compare box spanning both columns
-            this.rightPanel.Controls.Add(this.txtCompareResults, 0, 1);
-            this.rightPanel.SetColumnSpan(this.txtCompareResults, 2);
-
-            // assemble root: leftPanel in col0, rightPanel in col1
-            this.tableLayoutPanelRoot.Controls.Add(this.leftPanel, 0, 0);
-            this.tableLayoutPanelRoot.Controls.Add(this.rightPanel, 1, 0);
-
-            // flowLayoutPanel1 (unused placeholder)
-            this.flowLayoutPanel1.Visible = false;
+            this.txtCompareResults.Size = new System.Drawing.Size(1210, 294);
+            this.txtCompareResults.TabIndex = 2;
+            this.txtCompareResults.Text = "";
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-
-            // Form properties
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(200, 100);
+            this.flowLayoutPanel1.TabIndex = 3;
+            this.flowLayoutPanel1.Visible = false;
+            // 
+            // CaseStats
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.MinimumSize = new System.Drawing.Size(900, 600);
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Case KPI Calculator";
-            this.ClientSize = new System.Drawing.Size(1400, 800);
-            this.Name = "CaseStats";
-
-            // add controls to form (top-down)
+            this.ClientSize = new System.Drawing.Size(1560, 1081);
+            // Add the Fill (root) panel first so top-docked controls reserve space above it
             this.Controls.Add(this.tableLayoutPanelRoot);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.flowLayoutPanel1);
-
-            // wire up form load to existing initializer in code
+            this.MinimumSize = new System.Drawing.Size(900, 600);
+            this.Name = "CaseStats";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Case KPI Calculator";
             this.Load += new System.EventHandler(this.Form1_Load);
-
+            this.tableLayoutPanelRoot.ResumeLayout(false);
+            this.leftPanel.ResumeLayout(false);
+            this.leftPanel.PerformLayout();
+            this.rightPanel.ResumeLayout(false);
+            this.rightPanel.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
+
         }
 
         /// <summary>
