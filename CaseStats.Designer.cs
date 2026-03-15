@@ -15,7 +15,6 @@
         private System.Windows.Forms.TextBox txtFilePath;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtSavedResults2;
         private System.Windows.Forms.Button btnLoadStats;
         private System.Windows.Forms.CheckBox chkExcludeIncidents;
         private System.Windows.Forms.CheckBox chkExcludeNoActionDuplicate;
@@ -42,7 +41,6 @@
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtSavedResults2 = new System.Windows.Forms.TextBox();
             this.btnLoadStats = new System.Windows.Forms.Button();
             this.chkExcludeIncidents = new System.Windows.Forms.CheckBox();
             this.chkExcludeNoActionDuplicate = new System.Windows.Forms.CheckBox();
@@ -55,6 +53,7 @@
             this.txtSavedResults = new System.Windows.Forms.TextBox();
             this.txtCompareResults = new System.Windows.Forms.RichTextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.txtSavedResults2 = new System.Windows.Forms.TextBox();
             this.tableLayoutPanelRoot.SuspendLayout();
             this.leftPanel.SuspendLayout();
             this.rightPanel.SuspendLayout();
@@ -62,10 +61,9 @@
             // 
             // label4
             // 
-            this.label4.Dock = System.Windows.Forms.DockStyle.Top;
             this.label4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label4.Location = new System.Drawing.Point(0, 18);
+            this.label4.Location = new System.Drawing.Point(0, 0);
             this.label4.Margin = new System.Windows.Forms.Padding(3);
             this.label4.Name = "label4";
             this.label4.Padding = new System.Windows.Forms.Padding(3);
@@ -88,14 +86,15 @@
             this.tableLayoutPanelRoot.ColumnCount = 2;
             this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 320F));
             this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelRoot.Controls.Add(this.leftPanel, 0, 0);
-            this.tableLayoutPanelRoot.Controls.Add(this.rightPanel, 1, 0);
+            this.tableLayoutPanelRoot.Controls.Add(this.leftPanel, 0, 1);
+            this.tableLayoutPanelRoot.Controls.Add(this.rightPanel, 1, 1);
             this.tableLayoutPanelRoot.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanelRoot.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanelRoot.Location = new System.Drawing.Point(0, 18);
             this.tableLayoutPanelRoot.Name = "tableLayoutPanelRoot";
-            this.tableLayoutPanelRoot.RowCount = 1;
+            this.tableLayoutPanelRoot.RowCount = 2;
+            this.tableLayoutPanelRoot.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
             this.tableLayoutPanelRoot.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelRoot.Size = new System.Drawing.Size(1560, 1081);
+            this.tableLayoutPanelRoot.Size = new System.Drawing.Size(1560, 1063);
             this.tableLayoutPanelRoot.TabIndex = 0;
             // 
             // leftPanel
@@ -116,12 +115,13 @@
             this.leftPanel.Controls.Add(this.btnSaveStats);
             this.leftPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.leftPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.leftPanel.Location = new System.Drawing.Point(0, 30);
+            this.leftPanel.Location = new System.Drawing.Point(0, 100);
             this.leftPanel.Margin = new System.Windows.Forms.Padding(0, 30, 0, 30);
             this.leftPanel.Name = "leftPanel";
-            this.leftPanel.Size = new System.Drawing.Size(320, 1021);
+            this.leftPanel.Size = new System.Drawing.Size(320, 933);
             this.leftPanel.TabIndex = 0;
             this.leftPanel.WrapContents = false;
+            this.leftPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.leftPanel_Paint);
             // 
             // lblFile
             // 
@@ -136,21 +136,22 @@
             // 
             // txtFilePath
             // 
-            this.txtFilePath.Location = new System.Drawing.Point(3, 40);
-            this.txtFilePath.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
+            this.txtFilePath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtFilePath.Location = new System.Drawing.Point(3, 43);
+            this.txtFilePath.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.txtFilePath.MinimumSize = new System.Drawing.Size(260, 28);
             this.txtFilePath.Name = "txtFilePath";
-            this.txtFilePath.Size = new System.Drawing.Size(284, 31);
+            this.txtFilePath.Size = new System.Drawing.Size(284, 32);
             this.txtFilePath.TabIndex = 1;
             // 
             // btnBrowse
             // 
             this.btnBrowse.AutoSize = true;
-            this.btnBrowse.Location = new System.Drawing.Point(3, 82);
-            this.btnBrowse.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
+            this.btnBrowse.Location = new System.Drawing.Point(3, 87);
+            this.btnBrowse.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnBrowse.MinimumSize = new System.Drawing.Size(90, 30);
             this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(111, 35);
+            this.btnBrowse.Size = new System.Drawing.Size(168, 49);
             this.btnBrowse.TabIndex = 2;
             this.btnBrowse.Text = "Browse...";
             this.btnBrowse.UseVisualStyleBackColor = true;
@@ -160,30 +161,21 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label1.Location = new System.Drawing.Point(3, 137);
-            this.label1.Margin = new System.Windows.Forms.Padding(3, 12, 3, 6);
+            this.label1.Location = new System.Drawing.Point(3, 148);
+            this.label1.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(168, 25);
             this.label1.TabIndex = 3;
             this.label1.Text = "Comparison File";
             // 
-            // txtSavedResults2
-            // 
-            this.txtSavedResults2.Location = new System.Drawing.Point(3, 171);
-            this.txtSavedResults2.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
-            this.txtSavedResults2.MinimumSize = new System.Drawing.Size(260, 28);
-            this.txtSavedResults2.Name = "txtSavedResults2";
-            this.txtSavedResults2.Size = new System.Drawing.Size(284, 31);
-            this.txtSavedResults2.TabIndex = 4;
-            // 
             // btnLoadStats
             // 
             this.btnLoadStats.AutoSize = true;
-            this.btnLoadStats.Location = new System.Drawing.Point(3, 213);
-            this.btnLoadStats.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
+            this.btnLoadStats.Location = new System.Drawing.Point(3, 229);
+            this.btnLoadStats.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnLoadStats.MinimumSize = new System.Drawing.Size(90, 30);
             this.btnLoadStats.Name = "btnLoadStats";
-            this.btnLoadStats.Size = new System.Drawing.Size(111, 35);
+            this.btnLoadStats.Size = new System.Drawing.Size(168, 49);
             this.btnLoadStats.TabIndex = 5;
             this.btnLoadStats.Text = "Browse...";
             this.btnLoadStats.UseVisualStyleBackColor = true;
@@ -192,7 +184,7 @@
             // chkExcludeIncidents
             // 
             this.chkExcludeIncidents.AutoSize = true;
-            this.chkExcludeIncidents.Location = new System.Drawing.Point(3, 262);
+            this.chkExcludeIncidents.Location = new System.Drawing.Point(3, 290);
             this.chkExcludeIncidents.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.chkExcludeIncidents.Name = "chkExcludeIncidents";
             this.chkExcludeIncidents.Size = new System.Drawing.Size(213, 29);
@@ -203,7 +195,7 @@
             // chkExcludeNoActionDuplicate
             // 
             this.chkExcludeNoActionDuplicate.AutoSize = true;
-            this.chkExcludeNoActionDuplicate.Location = new System.Drawing.Point(3, 303);
+            this.chkExcludeNoActionDuplicate.Location = new System.Drawing.Point(3, 331);
             this.chkExcludeNoActionDuplicate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.chkExcludeNoActionDuplicate.Name = "chkExcludeNoActionDuplicate";
             this.chkExcludeNoActionDuplicate.Size = new System.Drawing.Size(301, 29);
@@ -214,8 +206,8 @@
             // chkExcludeReopened
             // 
             this.chkExcludeReopened.AutoSize = true;
-            this.chkExcludeReopened.Location = new System.Drawing.Point(3, 344);
-            this.chkExcludeReopened.Margin = new System.Windows.Forms.Padding(3, 6, 3, 12);
+            this.chkExcludeReopened.Location = new System.Drawing.Point(3, 372);
+            this.chkExcludeReopened.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.chkExcludeReopened.Name = "chkExcludeReopened";
             this.chkExcludeReopened.Size = new System.Drawing.Size(237, 29);
             this.chkExcludeReopened.TabIndex = 8;
@@ -225,11 +217,11 @@
             // btnCalculate
             // 
             this.btnCalculate.AutoSize = true;
-            this.btnCalculate.Location = new System.Drawing.Point(3, 391);
+            this.btnCalculate.Location = new System.Drawing.Point(3, 413);
             this.btnCalculate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnCalculate.MinimumSize = new System.Drawing.Size(120, 34);
             this.btnCalculate.Name = "btnCalculate";
-            this.btnCalculate.Size = new System.Drawing.Size(190, 36);
+            this.btnCalculate.Size = new System.Drawing.Size(213, 50);
             this.btnCalculate.TabIndex = 9;
             this.btnCalculate.Text = "Recalculate Stats";
             this.btnCalculate.UseVisualStyleBackColor = true;
@@ -238,11 +230,11 @@
             // btnClear
             // 
             this.btnClear.AutoSize = true;
-            this.btnClear.Location = new System.Drawing.Point(3, 439);
+            this.btnClear.Location = new System.Drawing.Point(3, 475);
             this.btnClear.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnClear.MinimumSize = new System.Drawing.Size(90, 30);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(100, 35);
+            this.btnClear.Size = new System.Drawing.Size(213, 50);
             this.btnClear.TabIndex = 10;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -251,11 +243,11 @@
             // btnSaveStats
             // 
             this.btnSaveStats.AutoSize = true;
-            this.btnSaveStats.Location = new System.Drawing.Point(3, 496);
-            this.btnSaveStats.Margin = new System.Windows.Forms.Padding(3, 16, 3, 6);
+            this.btnSaveStats.Location = new System.Drawing.Point(3, 537);
+            this.btnSaveStats.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnSaveStats.MinimumSize = new System.Drawing.Size(110, 34);
             this.btnSaveStats.Name = "btnSaveStats";
-            this.btnSaveStats.Size = new System.Drawing.Size(139, 35);
+            this.btnSaveStats.Size = new System.Drawing.Size(213, 50);
             this.btnSaveStats.TabIndex = 11;
             this.btnSaveStats.Text = "Export Stats";
             this.btnSaveStats.UseVisualStyleBackColor = true;
@@ -270,47 +262,50 @@
             this.rightPanel.Controls.Add(this.txtSavedResults, 1, 0);
             this.rightPanel.Controls.Add(this.txtCompareResults, 0, 1);
             this.rightPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rightPanel.Location = new System.Drawing.Point(320, 30);
+            this.rightPanel.Location = new System.Drawing.Point(320, 100);
             this.rightPanel.Margin = new System.Windows.Forms.Padding(0, 30, 0, 30);
             this.rightPanel.Name = "rightPanel";
             this.rightPanel.Padding = new System.Windows.Forms.Padding(12);
             this.rightPanel.RowCount = 2;
-            this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.rightPanel.Size = new System.Drawing.Size(1240, 1021);
+            this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.rightPanel.Size = new System.Drawing.Size(1240, 933);
             this.rightPanel.TabIndex = 1;
             // 
             // txtResults
             // 
             this.txtResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtResults.Location = new System.Drawing.Point(15, 15);
             this.txtResults.Multiline = true;
             this.txtResults.Name = "txtResults";
             this.txtResults.ReadOnly = true;
             this.txtResults.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtResults.Size = new System.Drawing.Size(602, 691);
+            this.txtResults.Size = new System.Drawing.Size(602, 539);
             this.txtResults.TabIndex = 0;
             // 
             // txtSavedResults
             // 
             this.txtSavedResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtSavedResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSavedResults.Location = new System.Drawing.Point(623, 15);
             this.txtSavedResults.Multiline = true;
             this.txtSavedResults.Name = "txtSavedResults";
             this.txtSavedResults.ReadOnly = true;
             this.txtSavedResults.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtSavedResults.Size = new System.Drawing.Size(602, 691);
+            this.txtSavedResults.Size = new System.Drawing.Size(602, 539);
             this.txtSavedResults.TabIndex = 1;
             // 
             // txtCompareResults
             // 
             this.rightPanel.SetColumnSpan(this.txtCompareResults, 2);
             this.txtCompareResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtCompareResults.Location = new System.Drawing.Point(15, 712);
+            this.txtCompareResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCompareResults.Location = new System.Drawing.Point(15, 560);
             this.txtCompareResults.Name = "txtCompareResults";
             this.txtCompareResults.ReadOnly = true;
             this.txtCompareResults.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtCompareResults.Size = new System.Drawing.Size(1210, 294);
+            this.txtCompareResults.Size = new System.Drawing.Size(1210, 358);
             this.txtCompareResults.TabIndex = 2;
             this.txtCompareResults.Text = "";
             // 
@@ -322,16 +317,24 @@
             this.flowLayoutPanel1.TabIndex = 3;
             this.flowLayoutPanel1.Visible = false;
             // 
+            // txtSavedResults2
+            // 
+            this.txtSavedResults2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSavedResults2.Location = new System.Drawing.Point(3, 185);
+            this.txtSavedResults2.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.txtSavedResults2.MinimumSize = new System.Drawing.Size(260, 28);
+            this.txtSavedResults2.Name = "txtSavedResults2";
+            this.txtSavedResults2.Size = new System.Drawing.Size(284, 32);
+            this.txtSavedResults2.TabIndex = 4;
+            // 
             // CaseStats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1560, 1081);
-            // Add the Fill (root) panel first so top-docked controls reserve space above it
             this.Controls.Add(this.tableLayoutPanelRoot);
             this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.flowLayoutPanel1);
             this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "CaseStats";
@@ -356,5 +359,7 @@
                 components.Dispose();
             base.Dispose(disposing);
         }
+
+        private System.Windows.Forms.TextBox txtSavedResults2;
     }
 }

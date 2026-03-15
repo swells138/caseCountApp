@@ -14,7 +14,8 @@ namespace JiraTicketStats
     {
         // stores the optional second CSV path (used to recalculate the right-side stats)
         private string _secondCsvPath;
-
+        // Add this field to the CaseStats class (at the top, with other controls)
+        private TextBox textBox1;
         public CaseStats()
         {
             InitializeComponent();
@@ -52,7 +53,98 @@ namespace JiraTicketStats
 
             // ensure second path cleared on startup
             _secondCsvPath = null;
-            txtSavedResults2.Text = string.Empty;
+
+            // Map legacy textBox1 to the designer control if present, and ensure non-null before use.
+            // Prefer the designer field txtSavedResults2 (exists in the Designer), fall back to any found control.
+            textBox1 = FindTextBox("txtSavedResults2") ?? this.txtSavedResults2 ?? FindTextBox("textBox1");
+            if (textBox1 == null)
+            {
+                // Create a non-visible placeholder to avoid repeated null checks later.
+                textBox1 = new TextBox { Name = "textBox1", Visible = false };
+                this.Controls.Add(textBox1);
+            }
+
+            textBox1.Text = string.Empty;
+
+            // --- Diagnostic output + normalization to make appearances identical ---
+            // Print visual properties to Debug output so you can inspect differences
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("==== TextBox visual properties at startup ====");
+                System.Diagnostics.Debug.WriteLine("txtFilePath: BorderStyle=" + txtFilePath.BorderStyle + ", Multiline=" + txtFilePath.Multiline + ", Font=" + txtFilePath.Font.ToString() + ", Size=" + txtFilePath.Size + ", BackColor=" + txtFilePath.BackColor);
+
+                var tbForDiag = textBox1 ?? txtSavedResults2;
+                if (tbForDiag != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("txtSavedResults2: BorderStyle=" + tbForDiag.BorderStyle + ", Multiline=" + tbForDiag.Multiline + ", Font=" + (tbForDiag.Font != null ? tbForDiag.Font.ToString() : "null") + ", Size=" + tbForDiag.Size + ", BackColor=" + tbForDiag.BackColor);
+
+                    // Force identical visual properties in case container/theme/layout changed one of them
+                    tbForDiag.Font = txtFilePath.Font;
+                    tbForDiag.BorderStyle = txtFilePath.BorderStyle;
+                    tbForDiag.Multiline = txtFilePath.Multiline;
+                    tbForDiag.Size = txtFilePath.Size;
+                    tbForDiag.MinimumSize = txtFilePath.MinimumSize;
+
+                    if (textBox1 == null)
+                        textBox1 = tbForDiag;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("No secondary textbox found for diagnostics.");
+                }
+
+               System.Diagnostics.Debug.WriteLine("After normalization:");
+                if (textBox1 != null)
+                    System.Diagnostics.Debug.WriteLine("txtSavedResults2: BorderStyle=" + textBox1.BorderStyle + ", Multiline=" + textBox1.Multiline + ", Font=" + textBox1.Font.ToString() + ", Size=" + textBox1.Size + ", BackColor=" + textBox1.BackColor);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Diagnostics failed: " + ex.Message);
+            }
+            // -------------------------------------------------------------------
+
+            // Explicit visual normalization to avoid theme/focus differences:
+            // enforce a single-line look, standard window background and a consistent border.
+            try
+            {
+                // Standardize the primary small file-path box
+                txtFilePath.Multiline = false; // single-line look
+                txtFilePath.BorderStyle = BorderStyle.FixedSingle;
+                txtFilePath.BackColor = SystemColors.Window;
+                // Keep the width but reduce height to a standard single-line height (if designer made it tall)
+                txtFilePath.MinimumSize = new Size(260, 24);
+                txtFilePath.Size = new Size(txtFilePath.Size.Width, Math.Max(24, txtFilePath.MinimumSize.Height));
+
+                // Apply the same to the secondary small textbox(s)
+                if (textBox1 != null)
+                {
+                    textBox1.Font = txtFilePath.Font;
+                    textBox1.Multiline = txtFilePath.Multiline;
+                    textBox1.BorderStyle = txtFilePath.BorderStyle;
+                    textBox1.BackColor = txtFilePath.BackColor;
+                    textBox1.MinimumSize = txtFilePath.MinimumSize;
+                    textBox1.Size = txtFilePath.Size;
+                }
+
+                if (txtSavedResults2 != null && txtSavedResults2 != textBox1)
+                {
+                    txtSavedResults2.Font = txtFilePath.Font;
+                    txtSavedResults2.Multiline = txtFilePath.Multiline;
+                    txtSavedResults2.BorderStyle = txtFilePath.BorderStyle;
+                    txtSavedResults2.BackColor = txtFilePath.BackColor;
+                    txtSavedResults2.MinimumSize = txtFilePath.MinimumSize;
+                    txtSavedResults2.Size = txtFilePath.Size;
+                }
+
+                // Move initial focus off the txtFilePath (prevents the initial accent/underline).
+                // Choose a logical target (Browse button). If you prefer none, you can set ActiveControl = null.
+                if (btnBrowse != null)
+                    btnBrowse.Select();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Visual normalization failed: " + ex.Message);
+            }
         }
 
         private async void btnBrowse_Click(object sender, EventArgs e)
@@ -138,7 +230,7 @@ namespace JiraTicketStats
                 }
 
                 // Decide which second-file path to use. Only accept .csv for recalculation.
-                string candidate = (txtSavedResults2.Text ?? string.Empty).Trim();
+                string candidate = (textBox1.Text ?? string.Empty).Trim();
 
                 // allow quoted paths
                 if (candidate.Length >= 2 && candidate[0] == '"' && candidate[candidate.Length - 1] == '"')
@@ -152,14 +244,14 @@ namespace JiraTicketStats
                 {
                     pathToUse = candidate;
                     _secondCsvPath = candidate; // persist choice
-                    txtSavedResults2.Text = candidate;
+                    textBox1.Text = candidate;
                 }
                 // Otherwise fall back to previously stored second CSV path (must also be .csv)
                 else if (!string.IsNullOrWhiteSpace(_secondCsvPath) && File.Exists(_secondCsvPath)
                     && string.Equals(Path.GetExtension(_secondCsvPath), ".csv", StringComparison.OrdinalIgnoreCase))
                 {
                     pathToUse = _secondCsvPath;
-                    txtSavedResults2.Text = _secondCsvPath;
+                    textBox1.Text = _secondCsvPath;
                 }
                 else
                 {
@@ -204,7 +296,7 @@ namespace JiraTicketStats
 
                                 // keep the small textbox showing the snapshot path but do not persist as CSV
                                 _secondCsvPath = null;
-                                txtSavedResults2.Text = candidate;
+                                textBox1.Text = candidate;
                                 // After loading a saved snapshot, if a comparison exists, update it
                                 UpdateComparisonIfPresent();
                                 return;
@@ -226,7 +318,7 @@ namespace JiraTicketStats
                 }
                 catch
                 {
-                    // Non-fatal; don't block the main workflow for comparison update failures.
+                    // Non-fatal, don't block the main workflow for comparison update failures.
                 }
             }
             catch (Exception ex)
@@ -630,7 +722,7 @@ namespace JiraTicketStats
 
             // Clear stored second-CSV path and its textbox
             _secondCsvPath = null;
-            txtSavedResults2.Text = string.Empty;
+            textBox1.Text = string.Empty;
 
             // Reset checkboxes to their default state (matches Form1_Load)
             chkExcludeIncidents.Checked = true;
@@ -703,7 +795,7 @@ namespace JiraTicketStats
             string compareRtf = compare != null ? compare.Rtf : string.Empty;
 
             string mainFilePath = txtFilePath.Text ?? string.Empty;
-            string secondPath = txtSavedResults2.Text ?? string.Empty;
+            string secondPath = textBox1.Text ?? string.Empty;
 
             string excludeReopened = chkExcludeReopened.Checked ? "True" : "False";
             string excludeIncidents = chkExcludeIncidents.Checked ? "True" : "False";
@@ -811,7 +903,7 @@ namespace JiraTicketStats
 
                     // store the CSV path so Recalculate will update this saved-results file as well
                     _secondCsvPath = path;
-                    txtSavedResults2.Text = path;
+                    textBox1.Text = path;
 
                     // If a comparison is present, update it to reflect the newly loaded saved results.
                     try
@@ -1176,6 +1268,11 @@ namespace JiraTicketStats
         }
 
         private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void leftPanel_Paint(object sender, PaintEventArgs e)
         {
 
         }
