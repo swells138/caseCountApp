@@ -71,7 +71,7 @@
             this.label4.TabIndex = 2;
             this.label4.Text = "Case History Statistic Comparison Tool (Beta)";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label4.Click += new System.EventHandler(this.label4_Click);
+           // this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // progressBar1
             // 
@@ -121,7 +121,7 @@
             this.leftPanel.Size = new System.Drawing.Size(320, 933);
             this.leftPanel.TabIndex = 0;
             this.leftPanel.WrapContents = false;
-            this.leftPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.leftPanel_Paint);
+           // this.leftPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.leftPanel_Paint);
             // 
             // lblFile
             // 
@@ -361,5 +361,7 @@
         }
 
         private System.Windows.Forms.TextBox txtSavedResults2;
+
+      
     }
 }

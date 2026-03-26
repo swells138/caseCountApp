@@ -361,7 +361,7 @@ namespace JiraTicketStats
             }
         }
 
-        // Reusable: build stats text for a CSV file path using supplied filters.
+        //  build stats text for a CSV file path using supplied filters.
         // Returns the formatted stats string (same format as existing txtResults).
         private async Task<string> BuildStatsTextAsync(string csvPath, bool excludeReopened, bool excludeIncidents, bool excludeNoActionDuplicate)
         {
@@ -554,10 +554,9 @@ namespace JiraTicketStats
                 int createdIndex = FindColumnIndex(headers, "Created");
                 int resolvedIndex = FindColumnIndex(headers, "Resolved");
                 int assigneeIndex = FindColumnIndex(headers, "Assignee");
-                int requestTypeIndex = FindColumnIndex(headers, "Custom Field (Request Type)");
-                int serviceRequestIndex = FindColumnIndex(headers, "Custom Field (Service Request)");
-                int componentIndex = FindColumnIndex(headers, "Service Request Component");
-                int reopenedIndex = FindColumnIndex(headers, "Re-Opened");
+                int requestTypeIndex = FindColumnIndex(headers, "Custom field (Request Type)");
+                int componentIndex = FindColumnIndex(headers, "Custom field (Service Request Component)");
+                int reopenedIndex = FindColumnIndex(headers, "Custom field (Re-Opened)");
 
                 // It's reasonable to require Created and Resolved columns
                 // if (createdIndex < 0 || resolvedIndex < 0)
@@ -585,7 +584,6 @@ namespace JiraTicketStats
                         Assignee = GetField(fields, assigneeIndex),
                         RequestType = GetField(fields, requestTypeIndex),
                         ServiceRequestComponent = GetField(fields, componentIndex),
-                        ServiceRequest = GetField(fields, serviceRequestIndex),
                         Reopened = GetField(fields, reopenedIndex)
                     };
 
@@ -604,11 +602,9 @@ namespace JiraTicketStats
         private static bool IsIncident(TicketRecord ticket)
         {
             string requestType = SafeLower(ticket.RequestType);
-            string serviceRequest = SafeLower(ticket.ServiceRequest);
             string component = SafeLower(ticket.ServiceRequestComponent);
 
             return (!string.IsNullOrEmpty(requestType) && requestType.Contains("incident"))
-                || (!string.IsNullOrEmpty(serviceRequest) && serviceRequest.Contains("incident"))
                 || (!string.IsNullOrEmpty(component) && component.Contains("incident"));
         }
 
@@ -629,7 +625,7 @@ namespace JiraTicketStats
             for (int i = 0; i < headers.Length; i++)
             {
                 if (!string.IsNullOrEmpty(headers[i]) &&
-                    headers[i].IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
+                    string.Equals(headers[i], name, StringComparison.OrdinalIgnoreCase))
                     return i;
             }
 
@@ -672,7 +668,7 @@ namespace JiraTicketStats
                 "yyyy-MM-ddTHH:mm:ss'Z'"
             };
 
-            // First try exact known formats (invariant)
+            // First try exact known formats
             if (DateTime.TryParseExact(rawDate, formats, CultureInfo.InvariantCulture,
                 DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out parsedDate))
             {
@@ -704,7 +700,7 @@ namespace JiraTicketStats
             return (values[(count / 2) - 1] + values[count / 2]) / 2.0;
         }
 
-        // Updated: btnClear_Click now resets the entire form to its initial state.
+        //btnClear_Click now resets the entire form to its initial state.
         private void btnClear_Click(object sender, EventArgs e)
         {
             // Clear main inputs and outputs
@@ -850,7 +846,7 @@ namespace JiraTicketStats
             }
         }
 
-        // Helper to escape CSV fields (wrap in double quotes, double any internal quotes)
+        // Helper to escape CSV fields 
         private static string EscapeCsv(string value)
         {
             if (value == null)
@@ -863,9 +859,6 @@ namespace JiraTicketStats
             return "\"" + escaped + "\"";
         }
 
-        // Load: supports saved stats (.stats/.txt) and CSV-like files.
-        // If file is a CSV (or looks like CSV because header contains 'Created' and 'Resolved')
-        // it's calculated using current checkbox filters and shown in txtSavedResults and the path stored.
         private async void btnLoadStats_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -962,7 +955,7 @@ namespace JiraTicketStats
             }
         }
 
-        // Helper: locate textbox by name safely (works even if controls are added in Designer)
+        // locate textbox by name safely (works even if controls are added in Designer)
         private TextBox FindTextBox(string name)
         {
             var found = this.Controls.Find(name, true);
@@ -975,7 +968,7 @@ namespace JiraTicketStats
             return null;
         }
 
-        // Helper: locate RichTextBox by name safely
+        // locate RichTextBox by name safely
         private RichTextBox FindRichTextBox(string name)
         {
             var found = this.Controls.Find(name, true);
@@ -988,7 +981,7 @@ namespace JiraTicketStats
             return null;
         }
 
-        // Helper: show long text in modal dialog
+        // show long text in modal dialog
         private void ShowLongTextInDialog(string title, string text)
         {
             using (Form dlg = new Form())
@@ -1012,7 +1005,7 @@ namespace JiraTicketStats
             }
         }
 
-        // Parsing a result block produced by this tool into a simple summary object.
+        // Parsing a result block produced by this tool into an object.
         private StatsSummary ParseStats(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
@@ -1066,7 +1059,7 @@ namespace JiraTicketStats
                 }
             }
 
-            // Basic validation: at least one numeric field must be set
+            // at least one numeric field must be set
             if (s.TotalTickets == 0 && s.AvgHours == 0 && s.MedianHours == 0 && s.MaxHours == 0 && s.MinHours == 0)
                 return null;
 
@@ -1106,7 +1099,7 @@ namespace JiraTicketStats
             return value;
         }
 
-        // Build a compact plain-text comparison (fallback)
+        // Build a compact plain-text comparison
         private string BuildCompactComparisonString(StatsSummary current, StatsSummary saved)
         {
             var sb = new System.Text.StringBuilder();
@@ -1129,7 +1122,7 @@ namespace JiraTicketStats
         }
 
         // Render the compact differences into the RichTextBox with color:
-        // positive diffs -> green, negative diffs -> red, zero -> default color (black)
+        // green -> improvement (better than saved), red -> worse, black -> unchanged.
         private void ShowCompactComparison(RichTextBox rtb, StatsSummary current, StatsSummary saved)
         {
             if (rtb == null) return;
@@ -1137,26 +1130,30 @@ namespace JiraTicketStats
             rtb.SuspendLayout();
             rtb.Clear();
 
-            AppendLabelAndColoredValue(rtb, "Total Tickets: ", (current.TotalTickets - saved.TotalTickets));
-            AppendLabelAndColoredValue(rtb, "Average Close Time (h): ", (current.AvgHours - saved.AvgHours));
-            AppendLabelAndColoredValue(rtb, "Median Close Time (h): ", (current.MedianHours - saved.MedianHours));
-            AppendLabelAndColoredValue(rtb, "Fastest Close Time (h): ", (current.MinHours - saved.MinHours));
-            AppendLabelAndColoredValue(rtb, "Slowest Close Time (h): ", (current.MaxHours - saved.MaxHours));
-            AppendLabelAndColoredValue(rtb, "Total Reopened: ", (current.TotalReopened - saved.TotalReopened));
+            // Total Tickets: higher is better
+            AppendLabelAndColoredValue(rtb, "Total Tickets: ", (current.TotalTickets - saved.TotalTickets), higherIsBetter: true);
+            // Time metrics: lower is better
+            AppendLabelAndColoredValue(rtb, "Average Close Time (h): ", (current.AvgHours - saved.AvgHours), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "Median Close Time (h): ", (current.MedianHours - saved.MedianHours), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "Fastest Close Time (h): ", (current.MinHours - saved.MinHours), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "Slowest Close Time (h): ", (current.MaxHours - saved.MaxHours), higherIsBetter: false);
+            // Total Reopened: lower is better
+            AppendLabelAndColoredValue(rtb, "Total Reopened: ", (current.TotalReopened - saved.TotalReopened), higherIsBetter: false);
 
             rtb.AppendText(Environment.NewLine);
             rtb.AppendText("Rows Skipped Differences:" + Environment.NewLine);
 
-            AppendLabelAndColoredValue(rtb, "  Bad/Missing Dates: ", (current.SkippedBadDates - saved.SkippedBadDates));
-            AppendLabelAndColoredValue(rtb, "  Reopened Excluded: ", (current.SkippedReopened - saved.SkippedReopened));
-            AppendLabelAndColoredValue(rtb, "  Incidents Excluded: ", (current.SkippedIncidents - saved.SkippedIncidents));
-            AppendLabelAndColoredValue(rtb, "  Duplicate / No Action Excluded: ", (current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction));
+            // Rows skipped: lower is better
+           // AppendLabelAndColoredValue(rtb, "  Bad/Missing Dates: ", (current.SkippedBadDates - saved.SkippedBadDates), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "  Reopened Excluded: ", (current.SkippedReopened - saved.SkippedReopened), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "  Incidents Excluded: ", (current.SkippedIncidents - saved.SkippedIncidents), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "  Duplicate / No Action Excluded: ", (current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction), higherIsBetter: false);
 
             rtb.ResumeLayout();
         }
 
         // Helper to append label and a colored numeric value. Works for int and double via overloads.
-        private void AppendLabelAndColoredValue(RichTextBox rtb, string label, int diff)
+        private void AppendLabelAndColoredValue(RichTextBox rtb, string label, int diff, bool higherIsBetter)
         {
             rtb.SelectionColor = Color.Black;
             rtb.AppendText(label);
@@ -1165,13 +1162,14 @@ namespace JiraTicketStats
             var len = rtb.TextLength - start;
 
             rtb.Select(start, len);
-            rtb.SelectionColor = diff > 0 ? Color.Green : (diff < 0 ? Color.Red : Color.Black);
+            bool improved = (higherIsBetter && diff > 0) || (!higherIsBetter && diff < 0);
+            rtb.SelectionColor = improved ? Color.Green : (diff == 0 ? Color.Black : Color.Red);
             rtb.Select(rtb.TextLength, 0);
             rtb.AppendText(Environment.NewLine);
             rtb.SelectionColor = Color.Black;
         }
 
-        private void AppendLabelAndColoredValue(RichTextBox rtb, string label, double diff)
+        private void AppendLabelAndColoredValue(RichTextBox rtb, string label, double diff, bool higherIsBetter)
         {
             rtb.SelectionColor = Color.Black;
             rtb.AppendText(label);
@@ -1180,18 +1178,16 @@ namespace JiraTicketStats
             var len = rtb.TextLength - start;
 
             rtb.Select(start, len);
-            rtb.SelectionColor = diff > 0 ? Color.Green : (diff < 0 ? Color.Red : Color.Black);
+            bool improved = (higherIsBetter && diff > 0.0) || (!higherIsBetter && diff < 0.0);
+            rtb.SelectionColor = improved ? Color.Green : (Math.Abs(diff) < 1e-9 ? Color.Black : Color.Red);
             rtb.Select(rtb.TextLength, 0);
             rtb.AppendText(Environment.NewLine);
             rtb.SelectionColor = Color.Black;
         }
-
-        // Add this method to the CaseStats class
-
-        /// <summary>
+       
         /// Attempts to extract an embedded source CSV path from a saved stats file.
         /// Looks for a line like: "# Source CSV: <path>" at the top of the file.
-        /// </summary>
+    
         /// <param name="statsFilePath">The path to the saved stats file.</param>
         /// <param name="sourceCsvPath">The extracted CSV path, or null if not found.</param>
         /// <returns>True if a source CSV path was found; otherwise, false.</returns>
@@ -1221,8 +1217,6 @@ namespace JiraTicketStats
             return false;
         }
 
-        // New helper: if a comparison box exists, update it by reparsing current & saved stats and rebuilding the comparison.
-        // Modified: always attempt to rebuild comparison when both current and saved stats are present.
         private void UpdateComparisonIfPresent()
         {
             var compare = FindRichTextBox("txtCompareResults");
@@ -1247,7 +1241,7 @@ namespace JiraTicketStats
             ShowCompactComparison(compare, curSummary, savedSummary);
         }
 
-        // Simple container for parsed stats
+        // container for parsed stats
         private class StatsSummary
         {
             public int TotalTickets { get; set; }
@@ -1261,21 +1255,6 @@ namespace JiraTicketStats
             public int SkippedIncidents { get; set; }
             public int SkippedDuplicateNoAction { get; set; }
         }
-
-        private void txtCompareResults_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void leftPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 
     public class TicketRecord
@@ -1285,8 +1264,6 @@ namespace JiraTicketStats
         public string Assignee { get; set; }
         public string RequestType { get; set; }
         public string ServiceRequestComponent { get; set; }
-        public string ServiceRequest { get; set; }
-
         public string Reopened { get; set; }
     }
 }
