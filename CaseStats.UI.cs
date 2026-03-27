@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Text;
 
 namespace JiraTicketStats
 {
@@ -117,26 +118,129 @@ namespace JiraTicketStats
             }
         }
 
-        private void btnBrowse_Click(object sender, EventArgs e)
+        // Modified: allow the top Browse button to open either a Jira CSV (as before)
+        // or a saved snapshot (.stats/.txt) and load it into the Current (left) results box.
+        private async void btnBrowse_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                ofd.Title = "Select Jira CSV File";
-                ofd.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
+                ofd.Title = "Select Jira CSV File or Saved Snapshot";
+                ofd.Filter = "CSV Files (*.csv)|*.csv|Snapshot Files (*.stats;*.txt)|*.stats;*.txt|All Files (*.*)|*.*";
+                ofd.CheckFileExists = true;
 
-                if (ofd.ShowDialog() == DialogResult.OK)
+                if (ofd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                var path = ofd.FileName;
+                if (string.IsNullOrWhiteSpace(path))
+                    return;
+
+                var ext = Path.GetExtension(path) ?? string.Empty;
+
+                try
                 {
-                    txtFilePath.Text = ofd.FileName;
+                    if (string.Equals(ext, ".csv", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // original behavior: treat as main CSV and calculate current stats
+                        txtFilePath.Text = path;
 
-                    try
-                    {
-                        btnCalculate_Click(this, EventArgs.Empty);
+                        try
+                        {
+                            btnCalculate_Click(this, EventArgs.Empty);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Failed to start calculation: " + ex.Message);
+                        }
                     }
-                    catch (Exception ex)
+                    else if (string.Equals(ext, ".stats", StringComparison.OrdinalIgnoreCase) || string.Equals(ext, ".txt", StringComparison.OrdinalIgnoreCase))
                     {
-                        MessageBox.Show("Failed to start calculation: " + ex.Message);
+                        // New behavior: load the selected snapshot AS the current-month stats (left box)
+                        await LoadSnapshotAsCurrentAsync(path);
+                        MessageBox.Show("Loaded snapshot into Current Results: " + Path.GetFileName(path), "Snapshot Loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        // Unknown extension: try CSV processing first, otherwise show file contents
+                        txtFilePath.Text = path;
+                        try
+                        {
+                            btnCalculate_Click(this, EventArgs.Empty);
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                string content = File.ReadAllText(path);
+                                txtResults.Text = content ?? string.Empty;
+                                _secondCsvPath = null;
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Failed to read file: " + ex.Message);
+                            }
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to load file: " + ex.Message);
+                }
+            }
+        }
+
+        // New helper: load a .stats/.txt snapshot into the Current (left) results box.
+        // If the snapshot embeds a source CSV and the CSV exists, recalculate stats from that CSV
+        // using the current filter checkboxes and set txtFilePath to that CSV.
+        private async Task LoadSnapshotAsCurrentAsync(string snapshotFilePath)
+        {
+            if (string.IsNullOrWhiteSpace(snapshotFilePath) || !File.Exists(snapshotFilePath))
+                throw new FileNotFoundException("Snapshot file not found", snapshotFilePath);
+
+            string content = File.ReadAllText(snapshotFilePath, Encoding.UTF8);
+
+            // try to extract embedded source CSV path (reuses IO helper)
+            string sourceCsv;
+            bool hasSource = TryExtractSourceCsv(snapshotFilePath, out sourceCsv);
+
+            if (hasSource && !string.IsNullOrWhiteSpace(sourceCsv) && File.Exists(sourceCsv)
+                && string.Equals(Path.GetExtension(sourceCsv), ".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    // Use current filter settings and recalculate into the current results box
+                    bool excludeReopened = chkExcludeReopened.Checked;
+                    bool excludeIncidents = chkExcludeIncidents.Checked;
+                    bool excludeNoActionDuplicate = chkExcludeNoActionDuplicate.Checked;
+
+                    var recalculated = await BuildStatsTextAsync(sourceCsv, excludeReopened, excludeIncidents, excludeNoActionDuplicate);
+
+                    txtResults.Text = recalculated;
+                    txtFilePath.Text = sourceCsv;
+
+                    // Do not change _secondCsvPath here (keeps second CSV behavior unchanged)
+                }
+                catch (Exception)
+                {
+                    // fallback to showing the raw snapshot content in the current box
+                    txtResults.Text = content;
+                    txtFilePath.Text = snapshotFilePath;
+                }
+            }
+            else
+            {
+                // No embedded CSV or CSV not available: load snapshot text directly into current box
+                txtResults.Text = content;
+                txtFilePath.Text = snapshotFilePath;
+            }
+
+            // Update comparison panel if present
+            try
+            {
+                UpdateComparisonIfPresent();
+            }
+            catch
+            {
             }
         }
 
@@ -362,8 +466,8 @@ namespace JiraTicketStats
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                ofd.Title = "Select CSV File for Saved Results";
-                ofd.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
+                ofd.Title = "Select CSV or Snapshot for Saved Results";
+                ofd.Filter = "CSV Files (*.csv)|*.csv|Snapshot Files (*.stats;*.txt)|*.stats;*.txt|All Files (*.*)|*.*";
                 ofd.CheckFileExists = true;
                 ofd.Multiselect = false;
 
@@ -371,41 +475,70 @@ namespace JiraTicketStats
                     return;
 
                 string path = ofd.FileName;
-
-                if (!string.Equals(Path.GetExtension(path), ".csv", StringComparison.OrdinalIgnoreCase))
-                {
-                    MessageBox.Show("Please select a .csv file for the second file. .txt/.stats snapshots are not accepted for recalculation.", "Select CSV Only", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (string.IsNullOrWhiteSpace(path))
                     return;
-                }
+
+                var ext = Path.GetExtension(path) ?? string.Empty;
 
                 try
                 {
-                    bool excludeReopened = chkExcludeReopened.Checked;
-                    bool excludeIncidents = chkExcludeIncidents.Checked;
-                    bool excludeNoActionDuplicate = chkExcludeNoActionDuplicate.Checked;
-
-                    var savedBox = FindTextBox("txtSavedResults");
-                    var txt = await BuildStatsTextAsync(path, excludeReopened, excludeIncidents, excludeNoActionDuplicate);
-
-                    if (savedBox == null)
-                        ShowLongTextInDialog("Calculated Stats (loaded CSV)", txt);
-                    else
-                        savedBox.Text = txt;
-
-                    _secondCsvPath = path;
-                    textBox1.Text = path;
-
-                    try
+                    if (string.Equals(ext, ".csv", StringComparison.OrdinalIgnoreCase))
                     {
-                        UpdateComparisonIfPresent();
+                        // CSV: recalculate saved results (existing behavior)
+                        bool excludeReopened = chkExcludeReopened.Checked;
+                        bool excludeIncidents = chkExcludeIncidents.Checked;
+                        bool excludeNoActionDuplicate = chkExcludeNoActionDuplicate.Checked;
+
+                        var savedBox = FindTextBox("txtSavedResults");
+                        var txt = await BuildStatsTextAsync(path, excludeReopened, excludeIncidents, excludeNoActionDuplicate);
+
+                        if (savedBox == null)
+                            ShowLongTextInDialog("Calculated Stats (loaded CSV)", txt);
+                        else
+                            savedBox.Text = txt;
+
+                        _secondCsvPath = path;
+                        textBox1.Text = path;
+
+                        try
+                        {
+                            UpdateComparisonIfPresent();
+                        }
+                        catch
+                        {
+                        }
                     }
-                    catch
+                    else if (string.Equals(ext, ".stats", StringComparison.OrdinalIgnoreCase) || string.Equals(ext, ".txt", StringComparison.OrdinalIgnoreCase))
                     {
+                        // Snapshot: load into saved-results area, attempting recalculation from embedded CSV if present
+                        await LoadSnapshotAsSavedAsync(path);
+                        MessageBox.Show("Loaded snapshot into Saved Results: " + Path.GetFileName(path), "Snapshot Loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        // Unknown extension: attempt to read as text into saved-results
+                        try
+                        {
+                            string content = File.ReadAllText(path, Encoding.UTF8);
+                            var savedBox = FindTextBox("txtSavedResults");
+                            if (savedBox != null)
+                                savedBox.Text = content;
+                            else
+                                ShowLongTextInDialog("Loaded Saved Results", content);
+
+                            _secondCsvPath = null;
+                            textBox1.Text = path;
+                            UpdateComparisonIfPresent();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Please select a .csv or a snapshot (.stats/.txt). Failed to load file: " + ex.Message, "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Failed to calculate stats from CSV: " + ex.Message);
+                    MessageBox.Show("Failed to load file: " + ex.Message);
                 }
             }
         }
