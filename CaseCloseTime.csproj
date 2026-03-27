@@ -65,8 +65,23 @@
     <Compile Include="CaseStats.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="CaseStats.Csv.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="CaseStats.Designer.cs">
       <DependentUpon>CaseStats.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CaseStats.IO.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CaseStats.Parsing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CaseStats.Processing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CaseStats.UI.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
