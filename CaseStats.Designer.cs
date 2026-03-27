@@ -15,7 +15,7 @@
         private System.Windows.Forms.TextBox txtFilePath;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnLoadStats;
+        //private System.Windows.Forms.Button btnLoadStats;
         private System.Windows.Forms.CheckBox chkExcludeIncidents;
         private System.Windows.Forms.CheckBox chkExcludeNoActionDuplicate;
         private System.Windows.Forms.CheckBox chkExcludeReopened;
@@ -25,7 +25,7 @@
 
         // New snapshot UI buttons
         private System.Windows.Forms.Button btnSaveSnapshot;
-        private System.Windows.Forms.Button btnLoadSnapshot;
+      //  private System.Windows.Forms.Button btnLoadSnapshot;
         private System.Windows.Forms.Button btnOpenSnapshots;
 
         private System.Windows.Forms.TextBox txtResults;
@@ -33,6 +33,12 @@
         private System.Windows.Forms.RichTextBox txtCompareResults;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 
+        // new labels for right panel headers and left instructions
+        private System.Windows.Forms.Label lblCurrentMonth;
+        private System.Windows.Forms.Label lblPastMonth;
+        private System.Windows.Forms.Label lblInstructions;
+
+        private System.Windows.Forms.TextBox txtSavedResults2;
         /// <summary> 
         /// Initialize components - simplified, even, responsive layout.
         /// </summary>
@@ -46,7 +52,7 @@
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnLoadStats = new System.Windows.Forms.Button();
+            //this.btnLoadStats = new System.Windows.Forms.Button();
             this.chkExcludeIncidents = new System.Windows.Forms.CheckBox();
             this.chkExcludeNoActionDuplicate = new System.Windows.Forms.CheckBox();
             this.chkExcludeReopened = new System.Windows.Forms.CheckBox();
@@ -56,14 +62,18 @@
 
             // instantiate new snapshot buttons
             this.btnSaveSnapshot = new System.Windows.Forms.Button();
-            this.btnLoadSnapshot = new System.Windows.Forms.Button();
+         //   this.btnLoadSnapshot = new System.Windows.Forms.Button();
             this.btnOpenSnapshots = new System.Windows.Forms.Button();
 
             this.rightPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.lblCurrentMonth = new System.Windows.Forms.Label();
+            this.lblPastMonth = new System.Windows.Forms.Label();
             this.txtResults = new System.Windows.Forms.TextBox();
             this.txtSavedResults = new System.Windows.Forms.TextBox();
             this.txtCompareResults = new System.Windows.Forms.RichTextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+
+            this.lblInstructions = new System.Windows.Forms.Label();
             this.txtSavedResults2 = new System.Windows.Forms.TextBox();
             this.tableLayoutPanelRoot.SuspendLayout();
             this.leftPanel.SuspendLayout();
@@ -116,8 +126,12 @@
             this.leftPanel.Controls.Add(this.txtFilePath);
             this.leftPanel.Controls.Add(this.btnBrowse);
             this.leftPanel.Controls.Add(this.label1);
+
+            // add an instruction label (best practice + export note)
+            this.leftPanel.Controls.Add(this.lblInstructions);
+
             this.leftPanel.Controls.Add(this.txtSavedResults2);
-            this.leftPanel.Controls.Add(this.btnLoadStats);
+          //  this.leftPanel.Controls.Add(this.btnLoadStats);
             this.leftPanel.Controls.Add(this.chkExcludeIncidents);
             this.leftPanel.Controls.Add(this.chkExcludeNoActionDuplicate);
             this.leftPanel.Controls.Add(this.chkExcludeReopened);
@@ -127,7 +141,7 @@
 
             // add new snapshot buttons into the flow (after Export Stats)
             this.leftPanel.Controls.Add(this.btnSaveSnapshot);
-            this.leftPanel.Controls.Add(this.btnLoadSnapshot);
+           //this.leftPanel.Controls.Add(this.btnLoadSnapshot);
             this.leftPanel.Controls.Add(this.btnOpenSnapshots);
 
             this.leftPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -185,23 +199,47 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Comparison File";
             // 
+            // lblInstructions
+            // 
+            this.lblInstructions.AutoSize = false;
+            this.lblInstructions.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.lblInstructions.Location = new System.Drawing.Point(3, 185);
+            this.lblInstructions.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.lblInstructions.MinimumSize = new System.Drawing.Size(260, 40);
+            this.lblInstructions.Name = "lblInstructions";
+            this.lblInstructions.Size = new System.Drawing.Size(284, 60);
+            this.lblInstructions.TabIndex = 4;
+            this.lblInstructions.Text = "Best practice: calculate stats for a specific month and use Save Snapshot to rec" +
+    "all later. Use only the Case History Filter in Jira and choose \"CSV (fields)\" wh" +
+    "en exporting.";
+            // 
+            // txtSavedResults2
+            // 
+            this.txtSavedResults2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSavedResults2.Location = new System.Drawing.Point(3, 261);
+            this.txtSavedResults2.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.txtSavedResults2.MinimumSize = new System.Drawing.Size(260, 28);
+            this.txtSavedResults2.Name = "txtSavedResults2";
+            this.txtSavedResults2.Size = new System.Drawing.Size(284, 32);
+            this.txtSavedResults2.TabIndex = 4;
+            // 
             // btnLoadStats
             // 
-            this.btnLoadStats.AutoSize = true;
-            this.btnLoadStats.Location = new System.Drawing.Point(3, 229);
-            this.btnLoadStats.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.btnLoadStats.MinimumSize = new System.Drawing.Size(90, 30);
-            this.btnLoadStats.Name = "btnLoadStats";
-            this.btnLoadStats.Size = new System.Drawing.Size(168, 49);
-            this.btnLoadStats.TabIndex = 5;
-            this.btnLoadStats.Text = "Browse...";
-            this.btnLoadStats.UseVisualStyleBackColor = true;
-            this.btnLoadStats.Click += new System.EventHandler(this.btnLoadStats_Click);
+          //  this.btnLoadStats.AutoSize = true;
+          //  this.btnLoadStats.Location = new System.Drawing.Point(3, 311);
+           // this.btnLoadStats.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+           // this.btnLoadStats.MinimumSize = new System.Drawing.Size(90, 30);
+           // this.btnLoadStats.Name = "btnLoadStats";
+           // this.btnLoadStats.Size = new System.Drawing.Size(168, 49);
+          //  this.btnLoadStats.TabIndex = 5;
+           // this.btnLoadStats.Text = "Browse...";
+           // this.btnLoadStats.UseVisualStyleBackColor = true;
+           // this.btnLoadStats.Click += new System.EventHandler(this.btnLoadStats_Click);
             // 
             // chkExcludeIncidents
             // 
             this.chkExcludeIncidents.AutoSize = true;
-            this.chkExcludeIncidents.Location = new System.Drawing.Point(3, 290);
+            this.chkExcludeIncidents.Location = new System.Drawing.Point(3, 372);
             this.chkExcludeIncidents.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.chkExcludeIncidents.Name = "chkExcludeIncidents";
             this.chkExcludeIncidents.Size = new System.Drawing.Size(213, 29);
@@ -212,7 +250,7 @@
             // chkExcludeNoActionDuplicate
             // 
             this.chkExcludeNoActionDuplicate.AutoSize = true;
-            this.chkExcludeNoActionDuplicate.Location = new System.Drawing.Point(3, 331);
+            this.chkExcludeNoActionDuplicate.Location = new System.Drawing.Point(3, 413);
             this.chkExcludeNoActionDuplicate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.chkExcludeNoActionDuplicate.Name = "chkExcludeNoActionDuplicate";
             this.chkExcludeNoActionDuplicate.Size = new System.Drawing.Size(301, 29);
@@ -223,7 +261,7 @@
             // chkExcludeReopened
             // 
             this.chkExcludeReopened.AutoSize = true;
-            this.chkExcludeReopened.Location = new System.Drawing.Point(3, 372);
+            this.chkExcludeReopened.Location = new System.Drawing.Point(3, 454);
             this.chkExcludeReopened.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.chkExcludeReopened.Name = "chkExcludeReopened";
             this.chkExcludeReopened.Size = new System.Drawing.Size(237, 29);
@@ -234,7 +272,7 @@
             // btnCalculate
             // 
             this.btnCalculate.AutoSize = true;
-            this.btnCalculate.Location = new System.Drawing.Point(3, 413);
+            this.btnCalculate.Location = new System.Drawing.Point(3, 495);
             this.btnCalculate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnCalculate.MinimumSize = new System.Drawing.Size(120, 34);
             this.btnCalculate.Name = "btnCalculate";
@@ -247,7 +285,7 @@
             // btnClear
             // 
             this.btnClear.AutoSize = true;
-            this.btnClear.Location = new System.Drawing.Point(3, 475);
+            this.btnClear.Location = new System.Drawing.Point(3, 557);
             this.btnClear.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnClear.MinimumSize = new System.Drawing.Size(90, 30);
             this.btnClear.Name = "btnClear";
@@ -260,7 +298,7 @@
             // btnSaveStats
             // 
             this.btnSaveStats.AutoSize = true;
-            this.btnSaveStats.Location = new System.Drawing.Point(3, 537);
+            this.btnSaveStats.Location = new System.Drawing.Point(3, 619);
             this.btnSaveStats.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnSaveStats.MinimumSize = new System.Drawing.Size(110, 34);
             this.btnSaveStats.Name = "btnSaveStats";
@@ -273,7 +311,7 @@
             // btnSaveSnapshot
             // 
             this.btnSaveSnapshot.AutoSize = true;
-            this.btnSaveSnapshot.Location = new System.Drawing.Point(3, 603);
+            this.btnSaveSnapshot.Location = new System.Drawing.Point(3, 685);
             this.btnSaveSnapshot.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnSaveSnapshot.MinimumSize = new System.Drawing.Size(110, 34);
             this.btnSaveSnapshot.Name = "btnSaveSnapshot";
@@ -285,21 +323,21 @@
             // 
             // btnLoadSnapshot
             // 
-            this.btnLoadSnapshot.AutoSize = true;
-            this.btnLoadSnapshot.Location = new System.Drawing.Point(3, 669);
-            this.btnLoadSnapshot.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.btnLoadSnapshot.MinimumSize = new System.Drawing.Size(110, 34);
-            this.btnLoadSnapshot.Name = "btnLoadSnapshot";
-            this.btnLoadSnapshot.Size = new System.Drawing.Size(213, 50);
-            this.btnLoadSnapshot.TabIndex = 13;
-            this.btnLoadSnapshot.Text = "Load Snapshot";
-            this.btnLoadSnapshot.UseVisualStyleBackColor = true;
-            this.btnLoadSnapshot.Click += new System.EventHandler(this.btnLoadSnapshot_Click);
+          //  this.btnLoadSnapshot.AutoSize = true;
+           // this.btnLoadSnapshot.Location = new System.Drawing.Point(3, 751);
+           // this.btnLoadSnapshot.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+           // this.btnLoadSnapshot.MinimumSize = new System.Drawing.Size(110, 34);
+           // this.btnLoadSnapshot.Name = "btnLoadSnapshot";
+           // this.btnLoadSnapshot.Size = new System.Drawing.Size(213, 50);
+           // this.btnLoadSnapshot.TabIndex = 13;
+            //this.btnLoadSnapshot.Text = "Load Snapshot";
+           // this.btnLoadSnapshot.UseVisualStyleBackColor = true;
+            //this.btnLoadSnapshot.Click += new System.EventHandler(this.btnLoadSnapshot_Click);
             // 
             // btnOpenSnapshots
             // 
             this.btnOpenSnapshots.AutoSize = true;
-            this.btnOpenSnapshots.Location = new System.Drawing.Point(3, 735);
+            this.btnOpenSnapshots.Location = new System.Drawing.Point(3, 817);
             this.btnOpenSnapshots.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnOpenSnapshots.MinimumSize = new System.Drawing.Size(110, 34);
             this.btnOpenSnapshots.Name = "btnOpenSnapshots";
@@ -314,25 +352,53 @@
             this.rightPanel.ColumnCount = 2;
             this.rightPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.rightPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.rightPanel.Controls.Add(this.txtResults, 0, 0);
-            this.rightPanel.Controls.Add(this.txtSavedResults, 1, 0);
-            this.rightPanel.Controls.Add(this.txtCompareResults, 0, 1);
+            // updated to support header row + content row + compare row
+            this.rightPanel.Controls.Add(this.lblCurrentMonth, 0, 0);
+            this.rightPanel.Controls.Add(this.lblPastMonth, 1, 0);
+            this.rightPanel.Controls.Add(this.txtResults, 0, 1);
+            this.rightPanel.Controls.Add(this.txtSavedResults, 1, 1);
+            this.rightPanel.Controls.Add(this.txtCompareResults, 0, 2);
             this.rightPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rightPanel.Location = new System.Drawing.Point(320, 100);
             this.rightPanel.Margin = new System.Windows.Forms.Padding(0, 30, 0, 30);
             this.rightPanel.Name = "rightPanel";
             this.rightPanel.Padding = new System.Windows.Forms.Padding(12);
-            this.rightPanel.RowCount = 2;
+            this.rightPanel.RowCount = 3;
+            this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 60F));
             this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.rightPanel.Size = new System.Drawing.Size(1240, 933);
             this.rightPanel.TabIndex = 1;
             // 
+            // lblCurrentMonth
+            // 
+            this.lblCurrentMonth.AutoSize = true;
+            this.lblCurrentMonth.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblCurrentMonth.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.lblCurrentMonth.Location = new System.Drawing.Point(15, 15);
+            this.lblCurrentMonth.Name = "lblCurrentMonth";
+            this.lblCurrentMonth.Padding = new System.Windows.Forms.Padding(3);
+            this.lblCurrentMonth.Size = new System.Drawing.Size(166, 31);
+            this.lblCurrentMonth.TabIndex = 0;
+            this.lblCurrentMonth.Text = "Current Month Stats";
+            // 
+            // lblPastMonth
+            // 
+            this.lblPastMonth.AutoSize = true;
+            this.lblPastMonth.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblPastMonth.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.lblPastMonth.Location = new System.Drawing.Point(623, 15);
+            this.lblPastMonth.Name = "lblPastMonth";
+            this.lblPastMonth.Padding = new System.Windows.Forms.Padding(3);
+            this.lblPastMonth.Size = new System.Drawing.Size(146, 31);
+            this.lblPastMonth.TabIndex = 1;
+            this.lblPastMonth.Text = "Past Month Stats";
+            // 
             // txtResults
             // 
             this.txtResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtResults.Location = new System.Drawing.Point(15, 15);
+            this.txtResults.Location = new System.Drawing.Point(15, 56);
             this.txtResults.Multiline = true;
             this.txtResults.Name = "txtResults";
             this.txtResults.ReadOnly = true;
@@ -344,7 +410,7 @@
             // 
             this.txtSavedResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtSavedResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSavedResults.Location = new System.Drawing.Point(623, 15);
+            this.txtSavedResults.Location = new System.Drawing.Point(623, 56);
             this.txtSavedResults.Multiline = true;
             this.txtSavedResults.Name = "txtSavedResults";
             this.txtSavedResults.ReadOnly = true;
@@ -357,11 +423,11 @@
             this.rightPanel.SetColumnSpan(this.txtCompareResults, 2);
             this.txtCompareResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtCompareResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCompareResults.Location = new System.Drawing.Point(15, 560);
+            this.txtCompareResults.Location = new System.Drawing.Point(15, 601);
             this.txtCompareResults.Name = "txtCompareResults";
             this.txtCompareResults.ReadOnly = true;
             this.txtCompareResults.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtCompareResults.Size = new System.Drawing.Size(1210, 358);
+            this.txtCompareResults.Size = new System.Drawing.Size(1210, 317);
             this.txtCompareResults.TabIndex = 2;
             this.txtCompareResults.Text = "";
             // 
@@ -372,16 +438,6 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(200, 100);
             this.flowLayoutPanel1.TabIndex = 3;
             this.flowLayoutPanel1.Visible = false;
-            // 
-            // txtSavedResults2
-            // 
-            this.txtSavedResults2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSavedResults2.Location = new System.Drawing.Point(3, 185);
-            this.txtSavedResults2.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.txtSavedResults2.MinimumSize = new System.Drawing.Size(260, 28);
-            this.txtSavedResults2.Name = "txtSavedResults2";
-            this.txtSavedResults2.Size = new System.Drawing.Size(284, 32);
-            this.txtSavedResults2.TabIndex = 4;
             // 
             // CaseStats
             // 
@@ -415,8 +471,6 @@
                 components.Dispose();
             base.Dispose(disposing);
         }
-
-        private System.Windows.Forms.TextBox txtSavedResults2;
 
       
     }
