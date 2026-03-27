@@ -85,6 +85,10 @@ namespace JiraTicketStats
 
                 List<double> closeHours = new List<double>();
 
+                // counters for Time to First Response
+                int firstResponseTotal = 0;
+                int firstResponseUnder2 = 0;
+
                 DateTime startOfYear = new DateTime(DateTime.Now.Year, 1, 1);
 
                 foreach (TicketRecord ticket in tickets)
@@ -150,6 +154,15 @@ namespace JiraTicketStats
                         continue;
                     }
 
+                    // process Time to First Response (if present)
+                    double firstRespHours;
+                    if (TryParseDurationHours(ticket.FirstResponseRaw, out firstRespHours))
+                    {
+                        firstResponseTotal++;
+                        if (firstRespHours < 2.0)
+                            firstResponseUnder2++;
+                    }
+
                     closeHours.Add(hours);
                     ((IProgress<int>)progress).Report(1);
                 }
@@ -161,7 +174,10 @@ namespace JiraTicketStats
                 double min = closeHours.Count > 0 ? closeHours.Min() : 0;
                 double max = closeHours.Count > 0 ? closeHours.Max() : 0;
 
-                // Build results string exactly as original
+                // Compute percent first response under 2 hours
+                double firstRespPercent = firstResponseTotal > 0 ? (firstResponseUnder2 * 100.0 / firstResponseTotal) : 0.0;
+
+                // Build results string exactly as original, with new first-response line
                 if (closeHours.Count == 0)
                 {
                     return "No valid resolved tickets were found after filtering.";
@@ -176,6 +192,9 @@ namespace JiraTicketStats
                         "Median Close Time: " + FormatTime(median) + Environment.NewLine +
                         "Fastest Close Time: " + FormatTime(min) + Environment.NewLine +
                         "Slowest Close Time: " + FormatTime(max) + Environment.NewLine +
+                        Environment.NewLine +
+                        // new metric line (appears in both main and saved result blocks)
+                        "Time to First Response < 2 hours: " + firstRespPercent.ToString("F2", CultureInfo.CurrentCulture) + "% (" + firstResponseUnder2 + " of " + firstResponseTotal + ")" + Environment.NewLine +
                         Environment.NewLine +
                         "Total Reopened Tickets: " + totalReopened + Environment.NewLine +
                         Environment.NewLine +
@@ -251,6 +270,63 @@ namespace JiraTicketStats
 
             // Fallback to general parse using current culture as a last resort
             return DateTime.TryParse(rawDate, CultureInfo.CurrentCulture, DateTimeStyles.AllowWhiteSpaces, out parsedDate);
+        }
+
+        // Try to parse a duration string into hours.
+        // Accepts common forms:
+        //  - "5.50 hours" or "2.00 days"
+        //  - "1:30" or "01:30:00" (TimeSpan)
+        //  - plain numeric (assumed hours)
+        //  - "30m" or "30 min"
+        private static bool TryParseDurationHours(string raw, out double hours)
+        {
+            hours = 0.0;
+
+            if (string.IsNullOrWhiteSpace(raw))
+                return false;
+
+            var text = raw.Trim();
+
+            // try timespan first (handles "H:mm", "H:mm:ss", etc.)
+            TimeSpan ts;
+            if (TimeSpan.TryParse(text, out ts))
+            {
+                hours = ts.TotalHours;
+                return true;
+            }
+
+            // split tokens like "5.50 hours" or "30 min"
+            var tokens = text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length == 0)
+                return false;
+
+            double value;
+            // try numeric parse of first token
+            if (double.TryParse(tokens[0], NumberStyles.Number, CultureInfo.CurrentCulture, out value))
+            {
+                if (tokens.Length > 1 && tokens[1].StartsWith("day", StringComparison.OrdinalIgnoreCase))
+                    hours = value * 24.0;
+                else
+                    hours = value;
+                return true;
+            }
+
+            // handle "30m" or "30min" (minutes shorthand)
+            var t0 = tokens[0].ToLowerInvariant();
+            if (t0.EndsWith("m") && double.TryParse(t0.TrimEnd('m'), NumberStyles.Number, CultureInfo.CurrentCulture, out value))
+            {
+                hours = value / 60.0;
+                return true;
+            }
+
+            // handle "5h" shorthand
+            if (t0.EndsWith("h") && double.TryParse(t0.TrimEnd('h'), NumberStyles.Number, CultureInfo.CurrentCulture, out value))
+            {
+                hours = value;
+                return true;
+            }
+
+            return false;
         }
 
         private static bool IsReopened(TicketRecord ticket)

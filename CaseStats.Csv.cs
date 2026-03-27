@@ -35,6 +35,14 @@ namespace JiraTicketStats
                 int componentIndex = FindColumnIndex(headers, "Custom field (Service Request Component)");
                 int reopenedIndex = FindColumnIndex(headers, "Custom field (Re-Opened)");
 
+                // try several common variations for a "time to first response" column
+                int firstResponseIndex = FindColumnIndex(headers, "Time to First Response");
+                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "Time to first response");
+                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "First Response");
+                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "Time To First Response");
+                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "Time to First Response (hours)");
+                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "First Response Time");
+
                 while (!parser.EndOfData)
                 {
                     string[] fields = null;
@@ -58,7 +66,8 @@ namespace JiraTicketStats
                         Assignee = GetField(fields, assigneeIndex),
                         RequestType = GetField(fields, requestTypeIndex),
                         ServiceRequestComponent = GetField(fields, componentIndex),
-                        Reopened = GetField(fields, reopenedIndex)
+                        Reopened = GetField(fields, reopenedIndex),
+                        FirstResponseRaw = GetField(fields, firstResponseIndex)
                     };
 
                     records.Add(record);
@@ -100,5 +109,8 @@ namespace JiraTicketStats
         public string RequestType { get; set; }
         public string ServiceRequestComponent { get; set; }
         public string Reopened { get; set; }
+
+        // added: raw value for Time to First Response column (if present)
+        public string FirstResponseRaw { get; set; }
     }
 }

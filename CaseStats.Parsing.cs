@@ -40,6 +40,10 @@ namespace JiraTicketStats
                 {
                     s.MaxHours = TryParseHoursFromLine(line);
                 }
+                else if (line.StartsWith("Time to First Response < 2 hours:", StringComparison.OrdinalIgnoreCase))
+                {
+                    s.FirstResponseUnder2Percent = TryParsePercentFromLine(line);
+                }
                 else if (line.StartsWith("Total Reopened Tickets:", StringComparison.OrdinalIgnoreCase))
                 {
                     s.TotalReopened = TryParseIntFromLine(line);
@@ -63,7 +67,7 @@ namespace JiraTicketStats
             }
 
             // at least one numeric field must be set
-            if (s.TotalTickets == 0 && s.AvgHours == 0 && s.MedianHours == 0 && s.MaxHours == 0 && s.MinHours == 0)
+            if (s.TotalTickets == 0 && s.AvgHours == 0 && s.MedianHours == 0 && s.MaxHours == 0 && s.MinHours == 0 && s.FirstResponseUnder2Percent == 0)
                 return null;
 
             return s;
@@ -102,6 +106,30 @@ namespace JiraTicketStats
             return value;
         }
 
+        // Parse "XX.XX%" (optionally followed by "(N of M)") into a percentage double.
+        private double TryParsePercentFromLine(string line)
+        {
+            int colon = line.IndexOf(':');
+            if (colon < 0) return 0;
+            string part = line.Substring(colon + 1).Trim();
+
+            if (string.IsNullOrEmpty(part)) return 0;
+
+            // take first token, remove trailing '%' if present
+            var tokens = part.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var token = tokens.Length > 0 ? tokens[0] : part;
+
+            token = token.Trim();
+            if (token.EndsWith("%"))
+                token = token.Substring(0, token.Length - 1).Trim();
+
+            double v;
+            if (double.TryParse(token, NumberStyles.Number, CultureInfo.CurrentCulture, out v))
+                return v;
+
+            return 0;
+        }
+
         // Build a compact plain-text comparison
         private string BuildCompactComparisonString(StatsSummary current, StatsSummary saved)
         {
@@ -113,6 +141,7 @@ namespace JiraTicketStats
             sb.AppendFormat("Median Close Time (h): {0:F2}", current.MedianHours - saved.MedianHours); sb.AppendLine();
             sb.AppendFormat("Fastest Close Time (h): {0:F2}", current.MinHours - saved.MinHours); sb.AppendLine();
             sb.AppendFormat("Slowest Close Time (h): {0:F2}", current.MaxHours - saved.MaxHours); sb.AppendLine();
+            sb.AppendFormat("Percent First Response <2h: {0:F2}", current.FirstResponseUnder2Percent - saved.FirstResponseUnder2Percent); sb.AppendLine();
             sb.AppendFormat("Total Reopened: {0}", current.TotalReopened - saved.TotalReopened); sb.AppendLine();
             sb.AppendLine();
             sb.AppendLine("Rows Skipped Differences:");
@@ -134,12 +163,14 @@ namespace JiraTicketStats
             rtb.Clear();
 
             // Total Tickets: higher is better
-            AppendLabelAndColoredValue(rtb, "Total Tickets: ", (current.TotalTickets - saved.TotalTickets), higherIsBetter: true);
+            AppendLabelAndColoredValue(rtb, "Total Tickets: ", (current.TotalTickets - saved.TotalTickets), higherIsBetter: false);
             // Time metrics: lower is better
             AppendLabelAndColoredValue(rtb, "Average Close Time (h): ", (current.AvgHours - saved.AvgHours), higherIsBetter: false);
             AppendLabelAndColoredValue(rtb, "Median Close Time (h): ", (current.MedianHours - saved.MedianHours), higherIsBetter: false);
             AppendLabelAndColoredValue(rtb, "Fastest Close Time (h): ", (current.MinHours - saved.MinHours), higherIsBetter: false);
             AppendLabelAndColoredValue(rtb, "Slowest Close Time (h): ", (current.MaxHours - saved.MaxHours), higherIsBetter: false);
+            // Percent First Response: higher is better
+            AppendLabelAndColoredValue(rtb, "Percent First Response <2h: ", (current.FirstResponseUnder2Percent - saved.FirstResponseUnder2Percent), higherIsBetter: true);
             // Total Reopened: lower is better
             AppendLabelAndColoredValue(rtb, "Total Reopened: ", (current.TotalReopened - saved.TotalReopened), higherIsBetter: false);
 
@@ -147,10 +178,10 @@ namespace JiraTicketStats
             rtb.AppendText("Rows Skipped Differences:" + Environment.NewLine);
 
             // Rows skipped: lower is better
-            AppendLabelAndColoredValue(rtb, "  Bad/Missing Dates: ", (current.SkippedBadDates - saved.SkippedBadDates), higherIsBetter: false);
-            AppendLabelAndColoredValue(rtb, "  Reopened Excluded: ", (current.SkippedReopened - saved.SkippedReopened), higherIsBetter: false);
-            AppendLabelAndColoredValue(rtb, "  Incidents Excluded: ", (current.SkippedIncidents - saved.SkippedIncidents), higherIsBetter: false);
-            AppendLabelAndColoredValue(rtb, "  Duplicate / No Action Excluded: ", (current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction), higherIsBetter: false);
+           //AppendLabelAndColoredValue(rtb, "  Bad/Missing Dates: ", (current.SkippedBadDates - saved.SkippedBadDates), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "  Reopened: ", (current.SkippedReopened - saved.SkippedReopened), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "  Incidents: ", (current.SkippedIncidents - saved.SkippedIncidents), higherIsBetter: false);
+            AppendLabelAndColoredValue(rtb, "  Duplicate / No Action: ", (current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction), higherIsBetter: true);
 
             rtb.ResumeLayout();
         }
@@ -196,6 +227,10 @@ namespace JiraTicketStats
             public double MedianHours { get; set; }
             public double MinHours { get; set; }
             public double MaxHours { get; set; }
+
+            // new: percent of first responses under 2 hours (0-100)
+            public double FirstResponseUnder2Percent { get; set; }
+
             public int TotalReopened { get; set; }
             public int SkippedBadDates { get; set; }
             public int SkippedReopened { get; set; }
