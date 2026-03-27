@@ -36,12 +36,8 @@ namespace JiraTicketStats
                 int reopenedIndex = FindColumnIndex(headers, "Custom field (Re-Opened)");
 
                 // try several common variations for a "time to first response" column
-                int firstResponseIndex = FindColumnIndex(headers, "Time to First Response");
-                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "Time to first response");
-                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "First Response");
-                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "Time To First Response");
-                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "Time to First Response (hours)");
-                if (firstResponseIndex < 0) firstResponseIndex = FindColumnIndex(headers, "First Response Time");
+                int firstResponseIndex = FindColumnIndex(headers, "Custom field (Time to First Response)");
+             
 
                 while (!parser.EndOfData)
                 {

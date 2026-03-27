@@ -40,9 +40,10 @@ namespace JiraTicketStats
                 {
                     s.MaxHours = TryParseHoursFromLine(line);
                 }
-                else if (line.StartsWith("Time to First Response < 2 hours:", StringComparison.OrdinalIgnoreCase))
+                else if (line.StartsWith("Time to First Response:", StringComparison.OrdinalIgnoreCase))
                 {
-                    s.FirstResponseUnder2Percent = TryParsePercentFromLine(line);
+                    // parse percentage and the "(N of M)" counts
+                    ParseFirstResponseLine(s, line);
                 }
                 else if (line.StartsWith("Total Reopened Tickets:", StringComparison.OrdinalIgnoreCase))
                 {
@@ -130,6 +131,47 @@ namespace JiraTicketStats
             return 0;
         }
 
+        // Parse "Time to First Response: XX.XX% (N of M)" into percent and counts
+        private void ParseFirstResponseLine(StatsSummary s, string line)
+        {
+            if (s == null || string.IsNullOrEmpty(line)) return;
+
+            int colon = line.IndexOf(':');
+            if (colon < 0) return;
+            string part = line.Substring(colon + 1).Trim();
+
+            if (string.IsNullOrEmpty(part)) return;
+
+            // parse percentage token first
+            var tokens = part.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var token = tokens.Length > 0 ? tokens[0] : part;
+            token = token.Trim();
+            if (token.EndsWith("%"))
+                token = token.Substring(0, token.Length - 1).Trim();
+
+            double percent;
+            if (double.TryParse(token, NumberStyles.Number, CultureInfo.CurrentCulture, out percent))
+                s.FirstResponseUnder2Percent = percent;
+
+            // attempt to parse "(N of M)" if present
+            int lp = part.IndexOf('(');
+            int rp = part.IndexOf(')');
+            if (lp >= 0 && rp > lp)
+            {
+                var inner = part.Substring(lp + 1, rp - lp - 1).Trim(); // e.g. "65 of 73"
+                // split by "of" (culture-insensitive simple split)
+                var ofParts = inner.Split(new[] { "of" }, StringSplitOptions.RemoveEmptyEntries);
+                if (ofParts.Length == 2)
+                {
+                    int n, m;
+                    if (int.TryParse(ofParts[0].Trim(), NumberStyles.Integer, CultureInfo.CurrentCulture, out n))
+                        s.FirstResponseUnder2Count = n;
+                    if (int.TryParse(ofParts[1].Trim(), NumberStyles.Integer, CultureInfo.CurrentCulture, out m))
+                        s.FirstResponseTotalCount = m;
+                }
+            }
+        }
+
         // Build a compact plain-text comparison
         private string BuildCompactComparisonString(StatsSummary current, StatsSummary saved)
         {
@@ -141,7 +183,12 @@ namespace JiraTicketStats
             sb.AppendFormat("Median Close Time (h): {0:F2}", current.MedianHours - saved.MedianHours); sb.AppendLine();
             sb.AppendFormat("Fastest Close Time (h): {0:F2}", current.MinHours - saved.MinHours); sb.AppendLine();
             sb.AppendFormat("Slowest Close Time (h): {0:F2}", current.MaxHours - saved.MaxHours); sb.AppendLine();
-            sb.AppendFormat("Percent First Response <2h: {0:F2}", current.FirstResponseUnder2Percent - saved.FirstResponseUnder2Percent); sb.AppendLine();
+
+            // include percent difference and raw count difference for first response
+            var percentDiff = current.FirstResponseUnder2Percent - saved.FirstResponseUnder2Percent;
+            var countDiff = current.FirstResponseUnder2Count - saved.FirstResponseUnder2Count;
+            //sb.AppendFormat("Percent First Response <2h: {0:F2}% ({1}{2})", percentDiff, (countDiff >= 0 ? "+" : ""), countDiff); sb.AppendLine();
+
             sb.AppendFormat("Total Reopened: {0}", current.TotalReopened - saved.TotalReopened); sb.AppendLine();
             sb.AppendLine();
             sb.AppendLine("Rows Skipped Differences:");
@@ -169,19 +216,23 @@ namespace JiraTicketStats
             AppendLabelAndColoredValue(rtb, "Median Close Time (h): ", (current.MedianHours - saved.MedianHours), higherIsBetter: false);
             AppendLabelAndColoredValue(rtb, "Fastest Close Time (h): ", (current.MinHours - saved.MinHours), higherIsBetter: false);
             AppendLabelAndColoredValue(rtb, "Slowest Close Time (h): ", (current.MaxHours - saved.MaxHours), higherIsBetter: false);
-            // Percent First Response: higher is better
-            AppendLabelAndColoredValue(rtb, "Percent First Response <2h: ", (current.FirstResponseUnder2Percent - saved.FirstResponseUnder2Percent), higherIsBetter: true);
+
+            // Percent First Response: higher is better — show percent diff (colored) and raw count diff (black)
+            var percentDiff = (current.FirstResponseUnder2Percent - saved.FirstResponseUnder2Percent);
+            var countDiff = (current.FirstResponseUnder2Count - saved.FirstResponseUnder2Count);
+          //  AppendLabelAndColoredPercentWithCount(rtb, "Percent First Response <2h: ", percentDiff, countDiff, higherIsBetter: true);
+
             // Total Reopened: lower is better
-            AppendLabelAndColoredValue(rtb, "Total Reopened: ", (current.TotalReopened - saved.TotalReopened), higherIsBetter: false);
+           // AppendLabelAndColoredValue(rtb, "Total Reopened: ", (current.TotalReopened - saved.TotalReopened), higherIsBetter: false);
 
             rtb.AppendText(Environment.NewLine);
-            rtb.AppendText("Rows Skipped Differences:" + Environment.NewLine);
+           // rtb.AppendText("Rows Skipped Differences:" + Environment.NewLine);
 
             // Rows skipped: lower is better
            //AppendLabelAndColoredValue(rtb, "  Bad/Missing Dates: ", (current.SkippedBadDates - saved.SkippedBadDates), higherIsBetter: false);
-            AppendLabelAndColoredValue(rtb, "  Reopened: ", (current.SkippedReopened - saved.SkippedReopened), higherIsBetter: false);
-            AppendLabelAndColoredValue(rtb, "  Incidents: ", (current.SkippedIncidents - saved.SkippedIncidents), higherIsBetter: false);
-            AppendLabelAndColoredValue(rtb, "  Duplicate / No Action: ", (current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction), higherIsBetter: true);
+           // AppendLabelAndColoredValue(rtb, "  Reopened: ", (current.SkippedReopened - saved.SkippedReopened), higherIsBetter: false);
+          //  AppendLabelAndColoredValue(rtb, "  Incidents: ", (current.SkippedIncidents - saved.SkippedIncidents), higherIsBetter: false);
+            //AppendLabelAndColoredValue(rtb, "  Duplicate / No Action: ", (current.SkippedDuplicateNoAction - saved.SkippedDuplicateNoAction), higherIsBetter: false);
 
             rtb.ResumeLayout();
         }
@@ -219,6 +270,27 @@ namespace JiraTicketStats
             rtb.SelectionColor = Color.Black;
         }
 
+        // Append percent (colored) and the raw count diff (black) on the same line.
+        private void AppendLabelAndColoredPercentWithCount(RichTextBox rtb, string label, double percentDiff, int countDiff, bool higherIsBetter)
+        {
+            rtb.SelectionColor = Color.Black;
+            rtb.AppendText(label);
+            var start = rtb.TextLength;
+            rtb.AppendText((percentDiff >= 0 ? "+" : "") + percentDiff.ToString("F2", CultureInfo.CurrentCulture) + "%");
+            var len = rtb.TextLength - start;
+
+            rtb.Select(start, len);
+            bool improved = (higherIsBetter && percentDiff > 0.0) || (!higherIsBetter && percentDiff < 0.0);
+            rtb.SelectionColor = improved ? Color.Green : (Math.Abs(percentDiff) < 1e-9 ? Color.Black : Color.Red);
+            rtb.Select(rtb.TextLength, 0);
+
+            // append raw count diff in black
+            rtb.SelectionColor = Color.Black;
+            rtb.AppendText(" (" + (countDiff >= 0 ? "+" : "") + countDiff.ToString(CultureInfo.CurrentCulture) + ")");
+            rtb.AppendText(Environment.NewLine);
+            rtb.SelectionColor = Color.Black;
+        }
+
         // container for parsed stats
         private class StatsSummary
         {
@@ -228,8 +300,11 @@ namespace JiraTicketStats
             public double MinHours { get; set; }
             public double MaxHours { get; set; }
 
-            // new: percent of first responses under 2 hours (0-100)
+            // percent of first responses under 2 hours (0-100)
             public double FirstResponseUnder2Percent { get; set; }
+            // parsed counts from "(N of M)"
+            public int FirstResponseUnder2Count { get; set; }
+            public int FirstResponseTotalCount { get; set; }
 
             public int TotalReopened { get; set; }
             public int SkippedBadDates { get; set; }
