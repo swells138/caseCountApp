@@ -23,6 +23,11 @@
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnSaveStats;
 
+        // New snapshot UI buttons
+        private System.Windows.Forms.Button btnSaveSnapshot;
+        private System.Windows.Forms.Button btnLoadSnapshot;
+        private System.Windows.Forms.Button btnOpenSnapshots;
+
         private System.Windows.Forms.TextBox txtResults;
         private System.Windows.Forms.TextBox txtSavedResults;
         private System.Windows.Forms.RichTextBox txtCompareResults;
@@ -48,6 +53,12 @@
             this.btnCalculate = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnSaveStats = new System.Windows.Forms.Button();
+
+            // instantiate new snapshot buttons
+            this.btnSaveSnapshot = new System.Windows.Forms.Button();
+            this.btnLoadSnapshot = new System.Windows.Forms.Button();
+            this.btnOpenSnapshots = new System.Windows.Forms.Button();
+
             this.rightPanel = new System.Windows.Forms.TableLayoutPanel();
             this.txtResults = new System.Windows.Forms.TextBox();
             this.txtSavedResults = new System.Windows.Forms.TextBox();
@@ -113,6 +124,12 @@
             this.leftPanel.Controls.Add(this.btnCalculate);
             this.leftPanel.Controls.Add(this.btnClear);
             this.leftPanel.Controls.Add(this.btnSaveStats);
+
+            // add new snapshot buttons into the flow (after Export Stats)
+            this.leftPanel.Controls.Add(this.btnSaveSnapshot);
+            this.leftPanel.Controls.Add(this.btnLoadSnapshot);
+            this.leftPanel.Controls.Add(this.btnOpenSnapshots);
+
             this.leftPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.leftPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.leftPanel.Location = new System.Drawing.Point(0, 100);
@@ -252,6 +269,45 @@
             this.btnSaveStats.Text = "Export Stats";
             this.btnSaveStats.UseVisualStyleBackColor = true;
             this.btnSaveStats.Click += new System.EventHandler(this.btnSaveStats_Click);
+            // 
+            // btnSaveSnapshot
+            // 
+            this.btnSaveSnapshot.AutoSize = true;
+            this.btnSaveSnapshot.Location = new System.Drawing.Point(3, 603);
+            this.btnSaveSnapshot.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnSaveSnapshot.MinimumSize = new System.Drawing.Size(110, 34);
+            this.btnSaveSnapshot.Name = "btnSaveSnapshot";
+            this.btnSaveSnapshot.Size = new System.Drawing.Size(213, 50);
+            this.btnSaveSnapshot.TabIndex = 12;
+            this.btnSaveSnapshot.Text = "Save Snapshot";
+            this.btnSaveSnapshot.UseVisualStyleBackColor = true;
+            this.btnSaveSnapshot.Click += new System.EventHandler(this.btnSaveSnapshot_Click);
+            // 
+            // btnLoadSnapshot
+            // 
+            this.btnLoadSnapshot.AutoSize = true;
+            this.btnLoadSnapshot.Location = new System.Drawing.Point(3, 669);
+            this.btnLoadSnapshot.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnLoadSnapshot.MinimumSize = new System.Drawing.Size(110, 34);
+            this.btnLoadSnapshot.Name = "btnLoadSnapshot";
+            this.btnLoadSnapshot.Size = new System.Drawing.Size(213, 50);
+            this.btnLoadSnapshot.TabIndex = 13;
+            this.btnLoadSnapshot.Text = "Load Snapshot";
+            this.btnLoadSnapshot.UseVisualStyleBackColor = true;
+            this.btnLoadSnapshot.Click += new System.EventHandler(this.btnLoadSnapshot_Click);
+            // 
+            // btnOpenSnapshots
+            // 
+            this.btnOpenSnapshots.AutoSize = true;
+            this.btnOpenSnapshots.Location = new System.Drawing.Point(3, 735);
+            this.btnOpenSnapshots.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnOpenSnapshots.MinimumSize = new System.Drawing.Size(110, 34);
+            this.btnOpenSnapshots.Name = "btnOpenSnapshots";
+            this.btnOpenSnapshots.Size = new System.Drawing.Size(213, 50);
+            this.btnOpenSnapshots.TabIndex = 14;
+            this.btnOpenSnapshots.Text = "Open Snapshots Folder";
+            this.btnOpenSnapshots.UseVisualStyleBackColor = true;
+            this.btnOpenSnapshots.Click += new System.EventHandler(this.btnOpenSnapshots_Click);
             // 
             // rightPanel
             // 

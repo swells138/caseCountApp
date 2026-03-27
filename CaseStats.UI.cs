@@ -516,5 +516,71 @@ namespace JiraTicketStats
 
             ShowCompactComparison(compare, curSummary, savedSummary);
         }
+
+        // New UI handlers for snapshot buttons
+
+        private async void btnSaveSnapshot_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var saved = await SaveSnapshotsByMonthAsync();
+                if (saved != null && saved.Length > 0)
+                {
+                    MessageBox.Show("Snapshots saved:" + Environment.NewLine + string.Join(Environment.NewLine, saved), "Snapshot Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("No snapshots were saved.", "Snapshot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to save snapshot: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnLoadSnapshot_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (OpenFileDialog ofd = new OpenFileDialog())
+                {
+                    ofd.Title = "Load Saved Snapshot";
+                    ofd.Filter = "Snapshot Files (*.stats)|*.stats|All Files (*.*)|*.*";
+                    ofd.CheckFileExists = true;
+
+                    try
+                    {
+                        var init = GetSnapshotsFolder();
+                        if (!string.IsNullOrWhiteSpace(init) && Directory.Exists(init))
+                            ofd.InitialDirectory = init;
+                    }
+                    catch { }
+
+                    if (ofd.ShowDialog() != DialogResult.OK)
+                        return;
+
+                    var path = ofd.FileName;
+                    await LoadSnapshotAsSavedAsync(path);
+                    MessageBox.Show("Loaded snapshot: " + Path.GetFileName(path), "Loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to load snapshot: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnOpenSnapshots_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OpenSnapshotsFolder();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to open snapshots folder: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
