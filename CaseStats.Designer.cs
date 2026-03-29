@@ -15,7 +15,7 @@
         private System.Windows.Forms.TextBox txtFilePath;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Label label1;
-        //private System.Windows.Forms.Button btnLoadStats;
+        private System.Windows.Forms.Button btnLoadStats;
         private System.Windows.Forms.CheckBox chkExcludeIncidents;
         private System.Windows.Forms.CheckBox chkExcludeNoActionDuplicate;
         private System.Windows.Forms.CheckBox chkExcludeReopened;
@@ -52,7 +52,7 @@
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            //this.btnLoadStats = new System.Windows.Forms.Button();
+            this.btnLoadStats = new System.Windows.Forms.Button();
             this.chkExcludeIncidents = new System.Windows.Forms.CheckBox();
             this.chkExcludeNoActionDuplicate = new System.Windows.Forms.CheckBox();
             this.chkExcludeReopened = new System.Windows.Forms.CheckBox();
@@ -131,7 +131,7 @@
             this.leftPanel.Controls.Add(this.lblInstructions);
 
             this.leftPanel.Controls.Add(this.txtSavedResults2);
-          //  this.leftPanel.Controls.Add(this.btnLoadStats);
+            this.leftPanel.Controls.Add(this.btnLoadStats);
             this.leftPanel.Controls.Add(this.chkExcludeIncidents);
             this.leftPanel.Controls.Add(this.chkExcludeNoActionDuplicate);
             this.leftPanel.Controls.Add(this.chkExcludeReopened);
@@ -225,16 +225,16 @@
             // 
             // btnLoadStats
             // 
-          //  this.btnLoadStats.AutoSize = true;
-          //  this.btnLoadStats.Location = new System.Drawing.Point(3, 311);
-           // this.btnLoadStats.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-           // this.btnLoadStats.MinimumSize = new System.Drawing.Size(90, 30);
-           // this.btnLoadStats.Name = "btnLoadStats";
-           // this.btnLoadStats.Size = new System.Drawing.Size(168, 49);
-          //  this.btnLoadStats.TabIndex = 5;
-           // this.btnLoadStats.Text = "Browse...";
-           // this.btnLoadStats.UseVisualStyleBackColor = true;
-           // this.btnLoadStats.Click += new System.EventHandler(this.btnLoadStats_Click);
+            this.btnLoadStats.AutoSize = true;
+            this.btnLoadStats.Location = new System.Drawing.Point(3, 311);
+            this.btnLoadStats.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnLoadStats.MinimumSize = new System.Drawing.Size(90, 30);
+            this.btnLoadStats.Name = "btnLoadStats";
+            this.btnLoadStats.Size = new System.Drawing.Size(168, 49);
+            this.btnLoadStats.TabIndex = 5;
+            this.btnLoadStats.Text = "Browse...";
+            this.btnLoadStats.UseVisualStyleBackColor = true;
+            this.btnLoadStats.Click += new System.EventHandler(this.btnLoadStats_Click);
             // 
             // chkExcludeIncidents
             // 
