@@ -105,8 +105,9 @@
             // tableLayoutPanelRoot
             // 
             this.tableLayoutPanelRoot.ColumnCount = 2;
-            this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 320F));
-            this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            // make left column resize with the form instead of fixed 320px
+            this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableLayoutPanelRoot.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanelRoot.Controls.Add(this.leftPanel, 0, 1);
             this.tableLayoutPanelRoot.Controls.Add(this.rightPanel, 1, 1);
             this.tableLayoutPanelRoot.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -146,10 +147,12 @@
 
             this.leftPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.leftPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            // smaller outer margin so the left column can shrink gracefully
             this.leftPanel.Location = new System.Drawing.Point(0, 100);
-            this.leftPanel.Margin = new System.Windows.Forms.Padding(0, 30, 0, 30);
+            this.leftPanel.Margin = new System.Windows.Forms.Padding(12);
             this.leftPanel.Name = "leftPanel";
-            this.leftPanel.Size = new System.Drawing.Size(320, 933);
+            // ensure a reasonable minimum width so controls don't collapse completely
+            this.leftPanel.MinimumSize = new System.Drawing.Size(260, 0);
             this.leftPanel.TabIndex = 0;
             this.leftPanel.WrapContents = false;
            // this.leftPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.leftPanel_Paint);
@@ -359,7 +362,8 @@
             this.rightPanel.Controls.Add(this.txtSavedResults, 1, 1);
             this.rightPanel.Controls.Add(this.txtCompareResults, 0, 2);
             this.rightPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rightPanel.Location = new System.Drawing.Point(320, 100);
+            // let the table layout position the right panel instead of hard-coded coordinates
+            this.rightPanel.Location = new System.Drawing.Point(0, 100);
             this.rightPanel.Margin = new System.Windows.Forms.Padding(0, 30, 0, 30);
             this.rightPanel.Name = "rightPanel";
             this.rightPanel.Padding = new System.Windows.Forms.Padding(12);
@@ -367,7 +371,6 @@
             this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 60F));
             this.rightPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40F));
-            this.rightPanel.Size = new System.Drawing.Size(1240, 933);
             this.rightPanel.TabIndex = 1;
             // 
             // lblCurrentMonth
