@@ -120,13 +120,24 @@ namespace JiraTicketStats
 
         // Modified: allow the top Browse button to open either a Jira CSV (as before)
         // or a saved snapshot (.stats/.txt) and load it into the Current (left) results box.
+        // Modified OpenFileDialog usage to default to "All Files" selection
+        // Modified: set OpenFileDialog initial directory to snapshots folder (if present)
         private async void btnBrowse_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Title = "Select Jira CSV File or Saved Snapshot";
                 ofd.Filter = "CSV Files (*.csv)|*.csv|Snapshot Files (*.stats;*.txt)|*.stats;*.txt|All Files (*.*)|*.*";
+                ofd.FilterIndex = 3; // default to "All Files"
                 ofd.CheckFileExists = true;
+
+                try
+                {
+                    var init = GetSnapshotsFolder();
+                    if (!string.IsNullOrWhiteSpace(init) && Directory.Exists(init))
+                        ofd.InitialDirectory = init;
+                }
+                catch { }
 
                 if (ofd.ShowDialog() != DialogResult.OK)
                     return;
@@ -468,8 +479,17 @@ namespace JiraTicketStats
             {
                 ofd.Title = "Select CSV or Snapshot for Saved Results";
                 ofd.Filter = "CSV Files (*.csv)|*.csv|Snapshot Files (*.stats;*.txt)|*.stats;*.txt|All Files (*.*)|*.*";
+                ofd.FilterIndex = 3; // default to "All Files"
                 ofd.CheckFileExists = true;
                 ofd.Multiselect = false;
+
+                try
+                {
+                    var init = GetSnapshotsFolder();
+                    if (!string.IsNullOrWhiteSpace(init) && Directory.Exists(init))
+                        ofd.InitialDirectory = init;
+                }
+                catch { }
 
                 if (ofd.ShowDialog() != DialogResult.OK)
                     return;
@@ -680,6 +700,7 @@ namespace JiraTicketStats
                 {
                     ofd.Title = "Load Saved Snapshot";
                     ofd.Filter = "Snapshot Files (*.stats)|*.stats|All Files (*.*)|*.*";
+                    ofd.FilterIndex = 2; // default to "All Files"
                     ofd.CheckFileExists = true;
 
                     try
